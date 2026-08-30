@@ -48,14 +48,12 @@ Verify the local setup:
 ```sh
 python -c "import inference_lab; print(inference_lab.__file__)"
 python -m modal --version
-python stages/00_gpu_basics/run.py
 python -m ruff check .
 python -m ruff format --check .
 ```
 
-The Stage 0 command currently prints a setup message, not GPU measurements. There
-are no implementation tests yet; add tests alongside the first reusable behavior
-and then run `python -m pytest`.
+These checks run locally. There are no implementation tests yet; add tests
+alongside the first reusable behavior and then run `python -m pytest`.
 
 Before running the first actual Modal experiment, authenticate interactively:
 
@@ -68,12 +66,22 @@ is separate from installing the Python package. Do not put account tokens in
 source code or commit them to Git. Review Modal resource settings and costs before
 launching GPU experiments.
 
+Run the Stage 0 GPU inspection (uses billable Modal resources):
+
+```sh
+python -m modal run stages/00_gpu_basics/run.py
+```
+
+See the [Stage 0 instructions](stages/00_gpu_basics/README.md) for expected output
+and the remaining experiments. The inspection code is ready; its first remote
+run and all measurements are pending.
+
 ### Local environment versus GPU environment
 
-The local environment contains the Modal client and development tools. PyTorch,
-Transformers, and later vLLM will be added to the remote GPU environment when their
-stages need them. A local package installation does not automatically configure a
-remote [Modal Image](https://modal.com/docs/guide/images).
+The local environment contains the Modal client and development tools. Stage 0
+installs PyTorch in its remote GPU Image. Transformers and vLLM will be added when
+their stages need them. A local package installation does not automatically
+configure a remote [Modal Image](https://modal.com/docs/guide/images).
 
 Dependency ranges in `pyproject.toml` are starter constraints, not an exact lock.
 Before comparing benchmarks, pin the remote image dependencies and record the

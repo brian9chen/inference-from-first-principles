@@ -2,7 +2,8 @@
 
 Build one shared implementation that becomes more capable at each stage. Stage
 directories hold small executable experiments and short write-ups, not 20
-independent projects. All stages are planned; only the Stage 0 scaffold exists.
+independent projects. Stage 0 GPU inspection is implemented but has not been run
+remotely. The remaining experiments and stages are planned.
 
 ## Stages 00–05: How does LLM inference work?
 

@@ -1,6 +1,7 @@
 # Stage 0 — Modal + GPU basics
 
-**Status:** planned. `run.py` is a local placeholder, not the GPU experiment.
+**Status:** GPU inspection implemented; first remote run pending. Tensor operations
+and benchmarks are not implemented yet.
 
 ## Concept
 
@@ -10,8 +11,8 @@ container reuse.
 
 ## What I am implementing
 
-- [ ] Define a Modal Image and a GPU Function.
-- [ ] Report GPU type, available VRAM, and relevant software versions.
+- [x] Define a Modal Image and a GPU Function.
+- [ ] Run GPU inspection and record hardware, VRAM, and software versions.
 - [ ] Execute a tensor operation and inspect its result.
 - [ ] Compare CPU and GPU execution for several tensor sizes.
 - [ ] Compare a first invocation with subsequent invocations.
@@ -25,16 +26,34 @@ hypotheses to test, not measured results.
 
 ## Experiment
 
-For now, from the repository root after activating `.venv`:
+From the repository root, activate `.venv` and authenticate if needed:
 
 ```sh
-python stages/00_gpu_basics/run.py
+source .venv/bin/activate
+python -m modal setup
 ```
 
-This only prints the scaffold status. No remote run command is documented yet
-because the Modal experiment has not been implemented.
+Run the inspection:
 
-When implementing the experiment:
+```sh
+python -m modal run stages/00_gpu_basics/run.py
+```
+
+This launches a billable T4 GPU function on Modal. The first run builds an Image
+with Python 3.12 and PyTorch 2.12.1 (CUDA 12.6). PyTorch is installed remotely;
+it is not required in the local environment.
+
+The local entrypoint prints JSON containing the GPU name, total/free VRAM in GiB,
+Python and PyTorch versions, PyTorch's CUDA build version, and CUDA availability.
+Free VRAM is a snapshot after CUDA initialization. The function is limited to
+one container and a 60-second execution timeout; image building happens separately.
+
+The memory readings use PyTorch's
+[`mem_get_info`](https://docs.pytorch.org/docs/2.12/generated/torch.cuda.memory.mem_get_info.html).
+See the [PyTorch wheel instructions](https://pytorch.org/get-started/previous-versions/)
+for the pinned CUDA build.
+
+For the next experiments:
 
 1. Run CPU and GPU comparisons in the same remote environment. Record CPU/GPU
    hardware, tensor shapes, dtype, and software versions.
