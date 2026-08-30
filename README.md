@@ -1,8 +1,12 @@
 # Inference from First Principles
 
-Hi there! I'm very interested in understanding and building distributed systems that provide users with an elegant abstraction of availability, low latency/high throughput, and correctness. Recently, I've discovered the inference space and found it to be an exciting combination of compute infrastructure and machine learning techniques. I want to learn about LLM inference runtime and infrastructure from first-principles, and this repository will document my progress as a I build an increasingly capable inference system.
+Hi there!
 
-I will begin with basic one forward pass and manual token generation to learn about concepts like prefill, decoding, and how the KV cache grows as new requests arrive. Then, I will build an inference system that implements batching, serving, routing, and distributed execution. Along the way, I hope to learn about lots of topics that are new to me including GPU architecture, the associated constraints that appear under high inference load, and how one request may run on multiple GPUs (multi-GPU serving).
+For the past year I've been very interested in understanding and building distributed systems that provide users with an elegant abstraction of availability, low latency/high throughput, and correctness. 
+
+Recently, I've discovered the inference space and found it involve a unique assortment of compute infrastructure problems due to the underlying operations required to generate output from a trained model. I want to learn about LLM inference runtime and infrastructure from first-principles, and this repository will document my progress as a I build an increasingly capable inference system.
+
+I will begin with basic one forward pass and manual token generation to learn about concepts like prefill, decoding, and how the KV cache grows for each new request. Then, I will build an inference system that implements batching, serving, routing, and distributed execution. Along the way, I hope to learn about lots of topics that are new to me including GPU architecture, the associated constraints that appear under high inference load, and how one request may run on multiple GPUs (multi-GPU serving).
 
 I plan on runnning all GPU experiments on Modal. Each stage extends a shared Python
 implementation and I will record the main takeaways from each experiment and how it might apply to a real inference system.
