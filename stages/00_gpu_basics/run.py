@@ -21,6 +21,17 @@ def inspect_gpu() -> dict[str, object]:
         raise RuntimeError("CUDA is unavailable in the GPU container.")
 
     free_bytes, total_bytes = torch.cuda.memory.mem_get_info(0)
+    
+    # Create two tensors stored in GPU VRAM
+    a = torch.tensor([[1., 2.], [3., 4.]], device="cuda")
+    b = torch.tensor([[5., 6.], [7., 8.]], device="cuda")
+
+    # GPU matrix multiplication
+    c = a @ b
+
+    print("Device:", c.device)
+    print("Result:", c.cpu().tolist())
+    
     return {
         "gpu_name": torch.cuda.get_device_name(0),
         "vram_total_gib": round(total_bytes / 1024**3, 2),
