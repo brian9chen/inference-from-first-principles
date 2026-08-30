@@ -1,0 +1,29 @@
+# Local Python environments and generated files
+.venv/
+__pycache__/
+*.py[cod]
+*.egg-info/
+build/
+dist/
+
+# Development caches and coverage output
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.coverage
+.coverage.*
+htmlcov/
+
+# Local credentials; a template must contain no secrets
+.env
+.env.*
+!.env.example
+.modal.toml
+
+# macOS
+.DS_Store
+
+# Downloaded weights and disposable experiment output
+/checkpoints/
+/.cache/
+/benchmarks/results/raw/
