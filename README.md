@@ -1,15 +1,13 @@
 # Inference from First Principles
 
-Learn LLM inference by building an increasingly capable inference system: from
-one forward pass and manual token generation to batching, serving, routing, and
-distributed execution.
+Hi there! I'm very interested in understanding and building distributed systems. Recently, I've discovered the inference space and found it to be an exciting combination of machine learning and compute infrastructure. I want to learn about LLM inference runtime and infrastructure from first-principles, and this repository will serve as my playground as a I build an increasingly capable inference system.
 
-GPU experiments will run on Modal. Each stage extends a shared Python
-implementation and records what the experiment teaches about real inference
-systems.
+I will begin with basic one forward pass and manual token generation to learn about concepts like prefill, decoding, and how the KV cache grows as new requests arrive. Then, I will build an inference system that implements batching, serving, routing, and distributed execution.
 
-**Status:** repository scaffold ready; Stage 0 implementation has not started.
-The current starter script runs locally and does not launch any cloud resources.
+I plan on runnning all GPU experiments on Modal. Each stage extends a shared Python
+implementation and I will record the main takeaways from each experiment and how it might apply to a real inference system.
+
+**Status:** Stage 0
 
 ## Roadmap
 
@@ -19,10 +17,9 @@ The current starter script runs locally and does not launch any cloud resources.
 | 06–10 | How does an inference runtime make it fast? | Static and continuous batching, memory benchmarks, vLLM comparison, HTTP serving |
 | 11–19 | How do we operate inference as infrastructure? | Concurrency, autoscaling, routing, cache locality, cold starts, multiple GPUs, disaggregation, SLO scheduling, capstone |
 
-The [complete roadmap](docs/roadmap.md) describes all 20 stages. Start with
-[Stage 0: Modal + GPU basics](stages/00_gpu_basics/README.md).
+The [complete roadmap](docs/roadmap.md) describes all 20 stages.
 
-## Local setup
+## Local setup if you are interested in running/building-off of any of the experiments yourself:
 
 Use Python 3.12 or newer. From the repository root, create a virtual environment
 if you do not already have one:
@@ -139,7 +136,3 @@ Each stage README documents:
 4. Experiment and reproduction command
 5. Results
 6. What this teaches about real inference systems
-
-A stage is complete when its experiment is reproducible and its results explain
-the behavior observed. The capstone is a learning system, with no claim of
-production readiness.
