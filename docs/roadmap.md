@@ -2,8 +2,9 @@
 
 Build one shared implementation that becomes more capable at each stage. Stage
 directories hold small executable experiments and short write-ups, not 20
-independent projects. Stage 0 GPU inspection is implemented but has not been run
-remotely. The remaining experiments and stages are planned.
+independent projects. Stage 0 GPU inspection has succeeded. Its CPU/GPU matrix
+benchmark is implemented, with measurements still pending. The remaining
+experiments and stages are planned.
 
 ## Stages 00–05: How does LLM inference work?
 

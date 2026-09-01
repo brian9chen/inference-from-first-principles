@@ -1,7 +1,8 @@
 # Benchmark results
 
 Commit small summaries, selected machine-readable measurements, and graphs that
-support the stage write-ups. No experiments have been run yet.
+support the stage write-ups. The first GPU inspection output is recorded in the
+[Stage 0 README](../../stages/00_gpu_basics/README.md); matrix timings are pending.
 
 For each experiment, record the reproduction command, code revision, model
 revision, resolved dependencies, GPU type/count, dtype, workload, warmup policy,

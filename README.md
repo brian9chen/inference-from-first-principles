@@ -72,15 +72,21 @@ Run the Stage 0 GPU inspection (uses billable Modal resources):
 python -m modal run stages/00_gpu_basics/run.py
 ```
 
-See the [Stage 0 instructions](stages/00_gpu_basics/README.md) for expected output
-and the remaining experiments. The inspection code is ready; its first remote
-run and all measurements are pending.
+Run the CPU/GPU matrix benchmark with `--benchmark`:
+
+```sh
+python -m modal run stages/00_gpu_basics/run.py --benchmark
+```
+
+See the [Stage 0 instructions](stages/00_gpu_basics/README.md) for timing
+definitions, saving results, and the remaining experiments. GPU inspection has
+succeeded; benchmark measurements are pending.
 
 ### Local environment versus GPU environment
 
 The local environment contains the Modal client and development tools. Stage 0
-installs PyTorch in its remote GPU Image. Transformers and vLLM will be added when
-their stages need them. A local package installation does not automatically
+installs NumPy and PyTorch in its remote GPU Image. Transformers and vLLM will be
+added when their stages need them. A local package installation does not automatically
 configure a remote [Modal Image](https://modal.com/docs/guide/images).
 
 Dependency ranges in `pyproject.toml` are starter constraints, not an exact lock.
