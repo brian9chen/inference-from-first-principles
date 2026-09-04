@@ -80,8 +80,8 @@ python -m modal run stages/00_gpu_basics/run.py --benchmark
 ```
 
 The [Stage 0 notes](stages/00_gpu_basics/README.md) define the timing boundaries,
-result artifacts, and remaining experiments. GPU inspection and the CPU/GPU
-matrix benchmark are complete.
+result artifacts, and remaining experiments. GPU inspection, the CPU/GPU matrix
+benchmark, and the container-reuse experiment are complete.
 
 ### Local environment versus GPU environment
 

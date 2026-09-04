@@ -23,6 +23,9 @@ htmlcov/
 # macOS
 .DS_Store
 
+# Local Codex instructions
+/AGENTS.md
+
 # Downloaded weights and disposable experiment output
 /checkpoints/
 /.cache/

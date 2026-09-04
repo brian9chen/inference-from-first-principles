@@ -72,8 +72,7 @@ def measure_ms(
     }
 
 
-def git_state() -> dict[str, object]:
-    repo_root = Path(__file__).resolve().parents[2]
+def git_state(repo_root: Path) -> dict[str, object]:
     commit = subprocess.run(
         ["git", "rev-parse", "HEAD"],
         cwd=repo_root,
@@ -106,7 +105,7 @@ def save_result(
         "schema_version": 1,
         "experiment": experiment,
         "recorded_at": datetime.now(UTC).isoformat(),
-        "git": git_state(),
+        "git": git_state(repo_root),
         "command": command,
         "data": data,
     }
@@ -136,7 +135,7 @@ def inspect_gpu() -> dict[str, object]:
 
 @app.cls(image=image, gpu="T4", max_containers=1, timeout=60)
 class ContainerReuseProbe:
-    @modal.enter()
+    @modal.enter()  # Once per container.
     def initialize(self) -> None:
         import uuid
 
@@ -144,7 +143,7 @@ class ContainerReuseProbe:
         self.invocation_count = 0
         self.gpu_inputs = None
 
-    @modal.method()
+    @modal.method()  # Once per RPC.
     def run(self) -> dict[str, object]:
         import sys
 

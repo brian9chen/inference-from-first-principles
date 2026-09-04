@@ -1,6 +1,6 @@
 # Benchmark results
 
-This directory is the canonical record of measured experiments. Benchmark modes
+This directory is the canonical record of measured experiments. Experiment modes
 write structured JSON here automatically; stage READMEs link to these artifacts
 without copying measured values or output tables.
 
@@ -12,8 +12,7 @@ Stage 0 currently records:
 
 - [`stage00-gpu-inspection.json`](stage00-gpu-inspection.json)
 - [`stage00-matmul.json`](stage00-matmul.json)
-
-The container-reuse experiment will add `stage00-container-reuse.json`.
+- [`stage00-container-reuse.json`](stage00-container-reuse.json)
 
 For each experiment, the record should capture the reproduction command, code
 revision, model revision, resolved dependencies, GPU type and count, dtype,

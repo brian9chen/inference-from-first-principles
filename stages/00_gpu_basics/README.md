@@ -1,7 +1,8 @@
 # Stage 0 — Modal + GPU basics
 
-**Status:** I have completed GPU inspection, a small tensor operation, and the
-CPU/GPU matrix benchmark. Next I will run the container-reuse experiment.
+**Status:** I have completed GPU inspection, a small tensor operation, the
+CPU/GPU matrix benchmark, and the container-reuse experiment. Next I will compare
+ephemeral container storage with a Modal Volume.
 
 ## Goal
 
@@ -15,7 +16,7 @@ Functions, container reuse, and Volumes.
 - [x] Record the GPU, VRAM, and software environment.
 - [x] Execute a tensor operation on the GPU.
 - [x] Compare CPU and GPU matrix multiplication at several sizes.
-- [ ] Compare the first and repeated invocations of one remote method.
+- [x] Compare the first and repeated invocations of one remote method.
 - [ ] Compare ephemeral container storage with a Modal Volume.
 - [ ] Write the final Stage 0 takeaways.
 
@@ -92,7 +93,7 @@ The analysis asks:
 
 ## Container reuse
 
-The next experiment runs with:
+The container-reuse experiment runs with:
 
 ```sh
 python -m modal run stages/00_gpu_basics/run.py --reuse --reuse-calls 3
@@ -103,16 +104,17 @@ The local entrypoint calls one remote class method sequentially. A
 cache once per container. Each invocation reports whether PyTorch, CUDA, and the
 GPU inputs were already initialized.
 
-Matching container IDs and increasing invocation counters will demonstrate
-reuse. A new ID will show that Modal replaced the container. `caller_wall_ms`
+Matching container IDs and increasing invocation counters demonstrate reuse. A
+new ID shows that Modal replaced the container. `caller_wall_ms`
 includes dispatch, queueing, networking, remote execution, and any observed
 container startup. `remote_total_ms` starts inside the method. The probe has no
 warmup loop, so every entry represents a separate remote invocation.
 
 The cached tensors model container-local GPU state without pretending to measure
-model loading. The command will write its result to
-`benchmarks/results/stage00-container-reuse.json`. Modal documents this lifecycle
-in [Container lifecycle hooks](https://modal.com/docs/guide/lifecycle-functions).
+model loading. The command writes its result to
+[`benchmarks/results/stage00-container-reuse.json`](../../benchmarks/results/stage00-container-reuse.json).
+Modal documents this lifecycle in
+[Container lifecycle hooks](https://modal.com/docs/guide/lifecycle-functions).
 
 ## Results and interpretation
 
@@ -129,9 +131,16 @@ The matrix experiment does not measure remote-call latency, model loading, or an
 LLM workload. The container-reuse experiment isolates some of those lifecycle
 effects, while model-loading costs return with an actual model in later stages.
 
+The reuse experiment confirmed that sequential calls can reach the same Modal
+container process. Python's imported-module state, the initialized CUDA context,
+and tensors in GPU memory remained available to later calls. The first call paid
+for runtime initialization and first-use GPU work, while the repeated calls
+mostly exposed steady-state computation and RPC overhead. This state is an
+optimization opportunity rather than durable storage or a correctness guarantee.
+
 ## Remaining work
 
-After recording the reuse result, I will compare a container-local file with a
-file committed to a Modal Volume across container replacement. I will then write
-the final Stage 0 takeaways and begin
+I will next compare a container-local file with a file committed to a Modal
+Volume across container replacement. I will then write the final Stage 0
+takeaways and begin
 [Stage 1](../../docs/roadmap.md#01--one-model-forward-pass).

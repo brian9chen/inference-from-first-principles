@@ -1,0 +1,66 @@
+{
+  "schema_version": 1,
+  "experiment": "stage00_container_reuse",
+  "recorded_at": "2026-09-04T22:35:06.620726+00:00",
+  "git": {
+    "commit": "86bb97e1a25873f5599fb6ff2c19048c896aff69",
+    "dirty": true
+  },
+  "command": "python -m modal run stages/00_gpu_basics/run.py --reuse --reuse-calls 3",
+  "data": {
+    "same_container": true,
+    "container_ids": [
+      "b7188bbce30946309a39b93a044f7256"
+    ],
+    "calls": [
+      {
+        "container_id": "b7188bbce30946309a39b93a044f7256",
+        "hostname": "modal",
+        "pid": 2,
+        "invocation": 1,
+        "torch_was_imported": false,
+        "cuda_was_initialized": false,
+        "inputs_were_cached": false,
+        "import_ms": 4832.209154,
+        "setup_ms": 463.3317589999999,
+        "matmul_ms": 57.524683000000465,
+        "remote_total_ms": 5354.414091,
+        "result_sample": -20.082447052001953,
+        "call": 1,
+        "caller_wall_ms": 9566.273625008762
+      },
+      {
+        "container_id": "b7188bbce30946309a39b93a044f7256",
+        "hostname": "modal",
+        "pid": 2,
+        "invocation": 2,
+        "torch_was_imported": true,
+        "cuda_was_initialized": true,
+        "inputs_were_cached": true,
+        "import_ms": 0.0017480000007452645,
+        "setup_ms": 0.06616100000034209,
+        "matmul_ms": 5.408037999999671,
+        "remote_total_ms": 5.58120199999923,
+        "result_sample": -20.082447052001953,
+        "call": 2,
+        "caller_wall_ms": 113.99425001582131
+      },
+      {
+        "container_id": "b7188bbce30946309a39b93a044f7256",
+        "hostname": "modal",
+        "pid": 2,
+        "invocation": 3,
+        "torch_was_imported": true,
+        "cuda_was_initialized": true,
+        "inputs_were_cached": true,
+        "import_ms": 0.0022469999994001455,
+        "setup_ms": 0.06899399999937827,
+        "matmul_ms": 5.915412000000231,
+        "remote_total_ms": 6.084292999999796,
+        "result_sample": -20.082447052001953,
+        "call": 3,
+        "caller_wall_ms": 114.9129580007866
+      }
+    ]
+  }
+}
