@@ -6,6 +6,10 @@ independent projects. Stage 0 GPU inspection has succeeded. Its CPU/GPU matrix
 benchmark is implemented, with measurements still pending. The remaining
 experiments and stages are planned.
 
+See [Big Picture](big-picture.md) for the end-to-end architecture, the roles of
+the educational runtime and vLLM, and the intended capstone. This roadmap is the
+detailed stage-by-stage implementation and experiment plan.
+
 ## Stages 00–05: How does LLM inference work?
 
 ### 00 — Modal + GPU basics
@@ -102,7 +106,9 @@ Directory: `stages/10_api/`
 
 Add an HTTP API and streaming generation. Send concurrent requests from a load
 generator. Measure client-observed latency as well as runtime timings: the
-project now includes a serving system around the inference runtime.
+project now includes a serving system around the inference runtime. Put the
+educational runtime and vLLM behind the same small backend interface where
+practical so clients can use either without changing the API contract.
 
 ## Stages 11–19: How do we operate inference as infrastructure?
 
@@ -182,8 +188,8 @@ is estimated and whether a policy can starve long requests.
 
 Directory: `stages/19_capstone/`
 
-Combine the API/router, request scheduling, autoscaled replicas, runtime or vLLM,
-KV caches, and metrics/SLOs into one learning system on Modal:
+Combine the API/router, request scheduling, autoscaled replicas, inference
+backends, KV caches, and metrics/SLOs into one learning system on Modal:
 
 ```text
                      API / Router
@@ -194,13 +200,15 @@ KV caches, and metrics/SLOs into one learning system on Modal:
                     /     |     \
                   GPU    GPU    GPU
                     \     |     /
-                 Runtime / vLLM per replica
+              Educational runtime or vLLM
                           |
                        KV caches
 ```
 
-Explain every component, why it exists, and what the measurements show. Keep the
-capstone small enough to understand; it does not need to be production-grade.
+Use vLLM as the primary serving backend and keep the educational runtime
+available for comparison and explanation. Explain every component, why it
+exists, and what the measurements show. Keep the capstone small enough to
+understand; it does not need to be production-grade.
 
 ## Shared implementation
 

@@ -2,14 +2,12 @@
 
 Hi there!
 
-For the past year I've been very interested in understanding and building distributed systems that provide users with an elegant abstraction of availability, low latency/high throughput, and correctness. 
-
-Recently, I've discovered the inference space and found it involve a unique assortment of compute infrastructure problems due to the underlying operations required to generate output from a trained model. I want to learn about LLM inference runtime and infrastructure from first-principles, and this repository will document my progress as a I build an increasingly capable inference system.
+My goal is to learn as much as possible about LLM inference by building an inference engine and the serving infra around it from first principles. This repository will document my progress as I learn about and build an increasingly capable inference system.
 
 I will begin with basic one forward pass and manual token generation to learn about concepts like prefill, decoding, and how the KV cache grows for each new request. Then, I will build an inference system that implements batching, serving, routing, and distributed execution. Along the way, I hope to learn about lots of topics that are new to me including GPU architecture, the associated constraints that appear under high inference load, and how one request may run on multiple GPUs (multi-GPU serving).
 
 I plan on runnning all GPU experiments on Modal. Each stage extends a shared Python
-implementation and I will record the main takeaways from each experiment and how it might apply to a real inference system.
+implementation and I will record the main benchmarks/takeaways from each experiment and how it might apply to a real inference system.
 
 **Status:** Stage 0
 
@@ -21,7 +19,10 @@ implementation and I will record the main takeaways from each experiment and how
 | 06–10 | How does an inference runtime make it fast? | Static and continuous batching, memory benchmarks, vLLM comparison, HTTP serving |
 | 11–19 | How do we operate inference as infrastructure? | Concurrency, autoscaling, routing, cache locality, cold starts, multiple GPUs, disaggregation, SLO scheduling, capstone |
 
-The [complete roadmap](docs/roadmap.md) describes all 20 stages.
+The [big-picture plan](docs/big-picture.md) explains how the educational runtime,
+vLLM, API, and infrastructure become one end-to-end service. The
+[complete roadmap](docs/roadmap.md) describes the implementation and experiments
+for all 20 stages.
 
 ## Local setup if you are interested in running/building-off of any of the experiments yourself:
 
@@ -114,6 +115,7 @@ inference-from-first-principles/
 ├── tests/
 │   └── README.md
 └── docs/
+    ├── big-picture.md
     └── roadmap.md
 ```
 
@@ -125,8 +127,8 @@ inference-from-first-principles/
 - `benchmarks/results/`: small result summaries and useful graphs. Put large,
   disposable outputs under `raw/`, which Git ignores.
 - `tests/`: tests for shared behavior as it is implemented.
-- `docs/`: the roadmap and, later, explanations of runtime and infrastructure
-  design decisions.
+- `docs/`: the end-to-end plan, detailed roadmap, and later explanations of
+  runtime and infrastructure design decisions.
 
 `__init__.py` marks `inference_lab` as a regular Python package. It can be empty;
 ours contains only a description. Add functionality in separate modules as the
