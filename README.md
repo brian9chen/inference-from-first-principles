@@ -24,10 +24,10 @@ vLLM, API, and infrastructure become one end-to-end service. The
 [complete roadmap](docs/roadmap.md) describes the implementation and experiments
 for all 20 stages.
 
-## Local setup if you are interested in running/building-off of any of the experiments yourself:
+## Local setup
 
-Use Python 3.12 or newer. From the repository root, create a virtual environment
-if you do not already have one:
+The project uses Python 3.12 or newer. A local virtual environment can be created
+from the repository root:
 
 ```sh
 python3 -m venv .venv
@@ -40,9 +40,9 @@ source .venv/bin/activate
 python -m pip install -e '.[dev]'
 ```
 
-The editable install (`-e`) lets scripts import `inference_lab` while you change
-its source. The `dev` extra installs Ruff for linting/formatting and pytest for
-future tests. Reactivate the environment in each new terminal session.
+The editable install (`-e`) lets scripts import `inference_lab` while its source
+changes. The `dev` extra installs Ruff for linting and formatting, plus pytest for
+future tests. The environment must be reactivated in each new terminal session.
 
 Verify the local setup:
 
@@ -79,9 +79,9 @@ Run the CPU/GPU matrix benchmark with `--benchmark`:
 python -m modal run stages/00_gpu_basics/run.py --benchmark
 ```
 
-See the [Stage 0 instructions](stages/00_gpu_basics/README.md) for timing
-definitions, saving results, and the remaining experiments. GPU inspection has
-succeeded; benchmark measurements are pending.
+The [Stage 0 notes](stages/00_gpu_basics/README.md) define the timing boundaries,
+result artifacts, and remaining experiments. GPU inspection and the CPU/GPU
+matrix benchmark are complete.
 
 ### Local environment versus GPU environment
 
@@ -99,6 +99,7 @@ resolved software versions, model revision, hardware, and workload.
 ```text
 inference-from-first-principles/
 ├── README.md
+├── AGENTS.md
 ├── .gitignore
 ├── pyproject.toml
 ├── inference_lab/
@@ -111,7 +112,9 @@ inference-from-first-principles/
 │   ├── workloads/
 │   │   └── README.md
 │   └── results/
-│       └── README.md
+│       ├── README.md
+│       ├── stage00-gpu-inspection.json
+│       └── stage00-matmul.json
 ├── tests/
 │   └── README.md
 └── docs/
@@ -124,8 +127,8 @@ inference-from-first-principles/
 - `stages/`: small experiments that import the shared implementation. Add each
   stage directory when work on that stage begins.
 - `benchmarks/workloads/`: reproducible prompts and workload definitions.
-- `benchmarks/results/`: small result summaries and useful graphs. Put large,
-  disposable outputs under `raw/`, which Git ignores.
+- `benchmarks/results/`: canonical machine-readable measurements and useful
+  graphs. Large or disposable outputs go under `raw/`, which Git ignores.
 - `tests/`: tests for shared behavior as it is implemented.
 - `docs/`: the end-to-end plan, detailed roadmap, and later explanations of
   runtime and infrastructure design decisions.
@@ -154,5 +157,5 @@ Each stage README documents:
 2. What is being implemented
 3. Hypothesis
 4. Experiment and reproduction command
-5. Results
-6. What this teaches about real inference systems
+5. Links to machine-readable results under `benchmarks/results/`
+6. Interpretation and implications for real inference systems

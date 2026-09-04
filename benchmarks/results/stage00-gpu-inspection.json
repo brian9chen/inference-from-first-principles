@@ -1,0 +1,20 @@
+{
+  "schema_version": 1,
+  "experiment": "stage00_gpu_inspection",
+  "recorded_at": "2026-09-04T21:21:41.051839+00:00",
+  "git": {
+    "commit": "4e1e8a6d8395f9fdff5e87dc33671fd7a5c728e9",
+    "dirty": true
+  },
+  "command": "python -m modal run stages/00_gpu_basics/run.py",
+  "data": {
+    "gpu_name": "Tesla T4",
+    "vram_total_gib": 14.56,
+    "vram_free_gib": 14.46,
+    "python_version": "3.12.10",
+    "numpy_version": "2.5.2",
+    "torch_version": "2.12.1+cu126",
+    "cuda_build_version": "12.6",
+    "cuda_available": true
+  }
+}

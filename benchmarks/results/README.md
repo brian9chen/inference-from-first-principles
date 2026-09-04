@@ -1,14 +1,27 @@
 # Benchmark results
 
-Commit small summaries, selected machine-readable measurements, and graphs that
-support the stage write-ups. The first GPU inspection output is recorded in the
-[Stage 0 README](../../stages/00_gpu_basics/README.md); matrix timings are pending.
+This directory is the canonical record of measured experiments. Benchmark modes
+write structured JSON here automatically; stage READMEs link to these artifacts
+without copying measured values or output tables.
 
-For each experiment, record the reproduction command, code revision, model
-revision, resolved dependencies, GPU type/count, dtype, workload, warmup policy,
-number of repetitions, and timing boundaries. Explain whether queueing, network
-time, and cold starts are included. Identify simulated results explicitly.
+Tracked result files represent the selected reproducible run for an experiment.
+Rerunning the corresponding command replaces that file. Alternate or disposable
+runs can be sent to `raw/` with `--output`; Git ignores that directory.
 
-Create `raw/` here when needed for large or disposable outputs; that directory is
-ignored by Git. Do not store model weights here. Avoid adding entire environment
-or credential dumps to result files.
+Stage 0 currently records:
+
+- [`stage00-gpu-inspection.json`](stage00-gpu-inspection.json)
+- [`stage00-matmul.json`](stage00-matmul.json)
+
+The container-reuse experiment will add `stage00-container-reuse.json`.
+
+For each experiment, the record should capture the reproduction command, code
+revision, model revision, resolved dependencies, GPU type and count, dtype,
+workload, warmup policy, repetition count, and timing boundaries. It should also
+state whether queueing, network time, and cold starts are included. Simulated
+results must be identified explicitly.
+
+Result records include an experiment name, timestamp, Git commit and dirty flag,
+hardware and software information exposed by the experiment, configuration, and
+measurements. Model weights, credentials, full environment dumps, and large
+temporary artifacts do not belong here.

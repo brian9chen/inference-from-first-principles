@@ -1,0 +1,82 @@
+{
+  "schema_version": 1,
+  "experiment": "stage00_matmul",
+  "recorded_at": null,
+  "git": {
+    "commit": null,
+    "dirty": null
+  },
+  "command": "python -m modal run stages/00_gpu_basics/run.py --benchmark --warmup 3 --repeats 10",
+  "provenance": {
+    "kind": "transcribed_terminal_output",
+    "note": "Summary values were preserved from the initial run; individual samples, full hardware metadata, exact timestamp, and Git state were not captured."
+  },
+  "data": {
+    "hardware": {
+      "gpu_name": "Tesla T4",
+      "cpu_threads": 2
+    },
+    "config": {
+      "dtype": "float32",
+      "matmul_precision": "highest",
+      "seed": 0,
+      "warmup": 3,
+      "repeats": 10,
+      "cpu_cores_requested": 2,
+      "rtol": 0.0001,
+      "atol": 0.001
+    },
+    "results": [
+      {
+        "size": 128,
+        "cpu": {"median_ms": 0.034, "min_ms": 0.033, "max_ms": 0.036},
+        "gpu": {"median_ms": 0.027, "min_ms": 0.026, "max_ms": 0.037},
+        "gpu_with_transfers": {"median_ms": 0.152, "min_ms": 0.145, "max_ms": 0.168},
+        "gpu_speedup": 1.26,
+        "transfer_speedup": 0.22,
+        "max_abs_error": 0.0000229,
+        "correct": true
+      },
+      {
+        "size": 512,
+        "cpu": {"median_ms": 0.983, "min_ms": 0.962, "max_ms": 1.048},
+        "gpu": {"median_ms": 0.145, "min_ms": 0.144, "max_ms": 0.151},
+        "gpu_with_transfers": {"median_ms": 1.287, "min_ms": 1.279, "max_ms": 1.306},
+        "gpu_speedup": 6.79,
+        "transfer_speedup": 0.76,
+        "max_abs_error": 0.0000992,
+        "correct": true
+      },
+      {
+        "size": 1024,
+        "cpu": {"median_ms": 6.956, "min_ms": 6.598, "max_ms": 7.608},
+        "gpu": {"median_ms": 0.843, "min_ms": 0.842, "max_ms": 0.847},
+        "gpu_with_transfers": {"median_ms": 3.79, "min_ms": 3.766, "max_ms": 3.86},
+        "gpu_speedup": 8.25,
+        "transfer_speedup": 1.84,
+        "max_abs_error": 0.0000992,
+        "correct": true
+      },
+      {
+        "size": 2048,
+        "cpu": {"median_ms": 59.295, "min_ms": 55.62, "max_ms": 61.318},
+        "gpu": {"median_ms": 6.046, "min_ms": 6.044, "max_ms": 6.051},
+        "gpu_with_transfers": {"median_ms": 16.006, "min_ms": 13.625, "max_ms": 16.32},
+        "gpu_speedup": 9.81,
+        "transfer_speedup": 3.7,
+        "max_abs_error": 0.00032,
+        "correct": true
+      },
+      {
+        "size": 4096,
+        "cpu": {"median_ms": 491.605, "min_ms": 451.091, "max_ms": 502.611},
+        "gpu": {"median_ms": 31.832, "min_ms": 30.622, "max_ms": 47.549},
+        "gpu_with_transfers": {"median_ms": 59.82, "min_ms": 59.657, "max_ms": 60.006},
+        "gpu_speedup": 15.44,
+        "transfer_speedup": 8.22,
+        "max_abs_error": 0.00104,
+        "correct": true
+      }
+    ]
+  }
+}

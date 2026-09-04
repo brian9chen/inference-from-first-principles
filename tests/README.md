@@ -1,10 +1,11 @@
 # Tests
 
-Add tests when shared behavior exists. There are no tests in this scaffold.
+I will add tests as reusable behavior emerges. The current scaffold has no tests.
 
 Useful future checks include sampling edge cases, cached versus uncached logits,
 batched versus individual outputs, and scheduler admission/completion behavior.
-Keep ordinary unit tests local and free of cloud charges. Remote GPU experiments
-should be run explicitly and documented separately.
+Ordinary unit tests will remain local and free of cloud charges. Remote GPU
+experiments will run explicitly and be documented separately.
 
-Once tests exist, run them from the repository root with `python -m pytest`.
+Once tests exist, the local test command will be `python -m pytest` from the
+repository root.

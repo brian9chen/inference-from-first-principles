@@ -1,147 +1,137 @@
 # Stage 0 — Modal + GPU basics
 
-**Status:** GPU inspection and the small tensor exercise completed. The CPU/GPU
-benchmark is implemented but has not been run yet.
+**Status:** I have completed GPU inspection, a small tensor operation, and the
+CPU/GPU matrix benchmark. Next I will run the container-reuse experiment.
 
-## Concept
+## Goal
 
-Learn where code runs, how a remote GPU is provisioned, and how to measure a
-tensor operation. Identify the roles of Modal Images, Functions, Volumes, and
-container reuse.
+I want to understand where Modal code runs, how a remote GPU is provisioned, and
+how to measure GPU work correctly. This stage also introduces Modal Images,
+Functions, container reuse, and Volumes.
 
-## What I am implementing
+## Plan
 
-- [x] Define a Modal Image and a GPU Function.
-- [x] Run GPU inspection and record hardware, VRAM, and software versions.
-- [x] Execute a tensor operation and inspect its result.
-- [ ] Compare CPU and GPU execution for several tensor sizes.
-- [ ] Compare a first invocation with subsequent invocations.
-- [ ] Explain what persists in a reused container and what a Volume is for.
+- [x] Define a Modal Image and GPU Function.
+- [x] Record the GPU, VRAM, and software environment.
+- [x] Execute a tensor operation on the GPU.
+- [x] Compare CPU and GPU matrix multiplication at several sizes.
+- [ ] Compare the first and repeated invocations of one remote method.
+- [ ] Compare ephemeral container storage with a Modal Volume.
+- [ ] Write the final Stage 0 takeaways.
 
-## Hypothesis
+## Hypotheses
 
-A GPU may help more as the tensor operation grows. For small operations,
-launch or transfer overhead may outweigh the compute benefit. These are
-hypotheses to test, not measured results.
+- GPU acceleration will become more useful as matrix size grows.
+- Transfer overhead will make the GPU less useful for small operations.
+- A reused container will retain imported modules, initialized CUDA state, and
+  in-memory tensors, reducing repeated-call latency.
+- A container's local filesystem and memory will disappear with the container,
+  while files committed to a Volume will persist.
 
-## Experiment
+## Remote environment
 
-From the repository root, activate `.venv` and authenticate if needed:
+The Modal Image contains Python 3.12, NumPy 2.5.2, and PyTorch 2.12.1 with CUDA
+12.6. NumPy and PyTorch are installed in the remote Image rather than the local
+development environment.
 
-```sh
-source .venv/bin/activate
-python -m modal setup
-```
-
-Run the inspection:
+GPU inspection runs with:
 
 ```sh
 python -m modal run stages/00_gpu_basics/run.py
 ```
 
-This launches a billable T4 GPU function on Modal. Its Image contains Python 3.12,
-NumPy 2.5.2, and PyTorch 2.12.1 (CUDA 12.6). NumPy and PyTorch are installed
-remotely; neither is required in the local environment.
-
-The local entrypoint prints JSON containing the GPU name, total/free VRAM in GiB,
-Python, NumPy, and PyTorch versions, PyTorch's CUDA build version, and CUDA
-availability.
-Free VRAM is a snapshot after CUDA initialization. The function is limited to
-one container and a 60-second execution timeout; image building happens separately.
+The remote Function reports the GPU name, VRAM, Python, NumPy, PyTorch, CUDA
+build, and CUDA availability. It also multiplies two small matrices on the GPU.
+The command automatically writes the canonical result to
+[`benchmarks/results/stage00-gpu-inspection.json`](../../benchmarks/results/stage00-gpu-inspection.json).
 
 The memory readings use PyTorch's
 [`mem_get_info`](https://docs.pytorch.org/docs/2.12/generated/torch.cuda.memory.mem_get_info.html).
-See the [PyTorch wheel instructions](https://pytorch.org/get-started/previous-versions/)
-for the pinned CUDA build.
 
-### CPU versus GPU matrix multiplication
+## CPU versus GPU matrix multiplication
+
+The matrix benchmark runs with:
 
 ```sh
 python -m modal run stages/00_gpu_basics/run.py --benchmark
 ```
 
-This selects a separate benchmark Function with one T4, two requested CPU cores,
-4 GiB of requested host memory, and a 180-second execution timeout. Both CPU and
-GPU measurements happen inside that same remote container, not on your laptop.
+It requests one T4, two CPU cores, 4 GiB of host memory, and a 180-second
+execution timeout. CPU and GPU measurements run inside the same remote
+container. The benchmark uses FP32 square matrices with sizes 128, 512, 1024,
+2048, and 4096, seed 0, two CPU threads, three warmup iterations, and ten
+measured repetitions by default.
 
-The benchmark multiplies square matrices of sizes 128, 512, 1024, 2048, and 4096.
-Inputs are identical on CPU and GPU, use FP32 with highest matmul precision, and
-are generated with seed 0. PyTorch uses two CPU threads. Each case gets three
-warmup iterations and ten measured repetitions by default.
-
-| Column | Timed work |
+| Measurement | Timed work |
 | --- | --- |
-| CPU | CPU matrix multiplication with inputs and output buffer already allocated |
-| GPU | GPU matrix multiplication with inputs already in VRAM and an allocated output buffer |
-| GPU + copies | Copy both inputs from host RAM to VRAM, multiply, and copy the result back to host RAM |
-| GPU x | CPU median divided by GPU median |
-| Copies x | CPU median divided by the GPU + copies median |
-| Max error | Largest absolute difference between CPU and returned GPU outputs |
+| CPU | Matrix multiplication with inputs and output already allocated in host memory |
+| GPU | Matrix multiplication with inputs and output already allocated in VRAM |
+| GPU + copies | Two host-to-device copies, matrix multiplication, and one device-to-host copy |
 
-Timing columns show median `[minimum, maximum]` in milliseconds. A speedup above
-1 favors the GPU; below 1 favors the CPU. The GPU result is checked against the
-CPU result with `rtol=1e-4` and `atol=1e-3`; a failed check raises an error.
+CUDA is synchronized around each measured operation. The benchmark excludes
+random input generation, allocation, image building, container startup, and
+networking. It checks the returned GPU output against the CPU result with
+`rtol=1e-4` and `atol=1e-3`.
 
-All measurements use a host wall clock. GPU work is synchronized before and after
-each measured operation, so GPU times include Python dispatch and the wait for
-completion. They measure operator latency, not pure GPU kernel time. The copy
-case uses blocking transfers and ordinary, unpinned host memory. All cases exclude
-random input generation, buffer allocation, image building, container startup,
-and networking. See [PyTorch asynchronous execution](https://docs.pytorch.org/docs/2.12/notes/cuda.html#asynchronous-execution).
-
-To change repetition counts and save every sample as local JSON:
+The command automatically replaces the canonical result at
+[`benchmarks/results/stage00-matmul.json`](../../benchmarks/results/stage00-matmul.json).
+An alternate output path can preserve an exploratory run:
 
 ```sh
 python -m modal run stages/00_gpu_basics/run.py --benchmark \
   --warmup 5 --repeats 20 \
-  --output benchmarks/results/raw/stage00-matmul.json
+  --output benchmarks/results/raw/stage00-matmul-5x20.json
 ```
 
-`--output` writes on your laptop and replaces an existing file at that path. The
-JSON includes hardware, settings, summaries, and samples. Its default `raw/`
-location is ignored by Git. Copy a small summary into this README after running
-and record the code revision used, including whether there were uncommitted edits.
+The analysis asks:
 
-Questions to answer from your measurements:
+1. At what size does resident GPU computation become faster than CPU computation?
+2. How does including transfers change the crossover?
+3. How much variation appears across repetitions?
+4. Which conclusions are limited by FP32, the T4, and the two-thread CPU setting?
 
-1. At what size, if any, does the GPU become faster with data already in VRAM?
-2. How does including transfers change that crossover?
-3. How much variation is there across repetitions?
-4. What do the FP32 precision and two-thread CPU settings limit your conclusions to?
+## Container reuse
 
-### Remaining experiments
+The next experiment runs with:
 
-1. Run the matrix benchmark, record results, and explain compute versus transfer costs.
-2. Compare first and repeated remote calls in the same Modal run. Record a
-   container identifier to establish whether the container was reused. Distinguish
-   first-call effects from the warmup iterations inside this benchmark; do not
-   assume each invocation starts a fresh container.
-3. Compare a file in the container's local filesystem with a file in a Modal
-   Volume after a container replacement. A reused container can retain process
-   state, but that is not durable storage; a Volume is for persistent files.
-4. Write the final Stage 0 takeaways and mark the remaining checklist items complete.
-
-## Results
-
-User-reported output from the initial GPU inspection, before NumPy was added:
-
-```json
-{
-  "gpu_name": "Tesla T4",
-  "vram_total_gib": 14.56,
-  "vram_free_gib": 14.46,
-  "python_version": "3.12.10",
-  "torch_version": "2.12.1+cu126",
-  "cuda_build_version": "12.6",
-  "cuda_available": true
-}
+```sh
+python -m modal run stages/00_gpu_basics/run.py --reuse --reuse-calls 3
 ```
 
-Matrix benchmark: not run yet. No CPU/GPU speedup claims or timing results yet.
+The local entrypoint calls one remote class method sequentially. A
+`@modal.enter` hook creates a container ID, invocation counter, and empty tensor
+cache once per container. Each invocation reports whether PyTorch, CUDA, and the
+GPU inputs were already initialized.
 
-## What this teaches about real inference systems
+Matching container IDs and increasing invocation counters will demonstrate
+reuse. A new ID will show that Modal replaced the container. `caller_wall_ms`
+includes dispatch, queueing, networking, remote execution, and any observed
+container startup. `remote_total_ms` starts inside the method. The probe has no
+warmup loop, so every entry represents a separate remote invocation.
 
-To be written after measurement: explain which costs are computation, which are
-data movement or startup, and how those costs affect an inference request.
+The cached tensors model container-local GPU state without pretending to measure
+model loading. The command will write its result to
+`benchmarks/results/stage00-container-reuse.json`. Modal documents this lifecycle
+in [Container lifecycle hooks](https://modal.com/docs/guide/lifecycle-functions).
 
-See the [full roadmap](../../docs/roadmap.md) for the next stages.
+## Results and interpretation
+
+Measured values and run metadata live under
+[`benchmarks/results/`](../../benchmarks/results/). Stage documentation retains
+only the experimental design and interpretation.
+
+The matrix experiment supports the expectation that data movement changes the
+CPU/GPU crossover. Resident GPU computation became advantageous earlier than the
+path that copied every input and output. This motivates keeping model weights and
+active KV-cache state in VRAM during inference.
+
+The matrix experiment does not measure remote-call latency, model loading, or an
+LLM workload. The container-reuse experiment isolates some of those lifecycle
+effects, while model-loading costs return with an actual model in later stages.
+
+## Remaining work
+
+After recording the reuse result, I will compare a container-local file with a
+file committed to a Modal Volume across container replacement. I will then write
+the final Stage 0 takeaways and begin
+[Stage 1](../../docs/roadmap.md#01--one-model-forward-pass).

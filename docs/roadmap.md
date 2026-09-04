@@ -1,10 +1,10 @@
 # Roadmap
 
-Build one shared implementation that becomes more capable at each stage. Stage
-directories hold small executable experiments and short write-ups, not 20
-independent projects. Stage 0 GPU inspection has succeeded. Its CPU/GPU matrix
-benchmark is implemented, with measurements still pending. The remaining
-experiments and stages are planned.
+The project uses one shared implementation that becomes more capable at each
+stage. Stage directories hold small executable experiments and short write-ups,
+not 20 independent projects. Stage 0 GPU inspection has succeeded. Its CPU/GPU
+matrix benchmark is complete, and its container-reuse experiment is ready to
+run. The remaining experiments and stages are planned.
 
 See [Big Picture](big-picture.md) for the end-to-end architecture, the roles of
 the educational runtime and vLLM, and the intended capstone. This roadmap is the
@@ -212,7 +212,8 @@ understand; it does not need to be production-grade.
 
 ## Shared implementation
 
-Add these modules under `inference_lab/` when their responsibilities emerge:
+These modules will be added under `inference_lab/` as their responsibilities
+emerge:
 
 | Module | Responsibility |
 | --- | --- |
@@ -226,20 +227,20 @@ Add these modules under `inference_lab/` when their responsibilities emerge:
 | `metrics.py` | Timing, memory, throughput, and latency summaries |
 | `serving.py` | HTTP and streaming integration |
 
-Do not create empty implementations for future stages. Keep experiment scripts
-small and reuse the shared code. Add `docs/runtime.md` and
-`docs/infrastructure.md` when there are design decisions to explain.
+Future modules will not be created as empty placeholders. Experiment scripts
+will remain small and reuse shared code. `docs/runtime.md` and
+`docs/infrastructure.md` will be added when design decisions need explanation.
 
 ## Experiment standard
 
 Each write-up follows: concept → implementation → hypothesis → experiment →
-results → implications for real inference systems.
+result artifact → interpretation → implications for real inference systems.
 
-Record the code and model revisions, hardware, resolved dependencies, dtype,
-prompt/output sizes, batching/concurrency, warmup, repetition count, and timing
-boundaries. State whether measurements include networking, queueing, transfers,
-and cold starts. Never present a planned or simulated result as a measured GPU
-result.
+Each result artifact will record the code and model revisions, hardware, resolved
+dependencies, dtype, prompt/output sizes, batching/concurrency, warmup,
+repetition count, and timing boundaries. It will state whether measurements
+include networking, queueing, transfers, and cold starts. Planned or simulated
+results will never be presented as measured GPU results.
 
 Modal's request batching and container concurrency are separate from continuous
 batching inside an inference engine. The runtime can independently schedule
