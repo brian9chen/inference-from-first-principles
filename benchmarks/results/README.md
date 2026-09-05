@@ -14,6 +14,8 @@ Stage 0 currently records:
 - [`stage00-matmul.json`](stage00-matmul.json)
 - [`stage00-container-reuse.json`](stage00-container-reuse.json)
 
+The Volume experiment will add `stage00-volume.json`.
+
 For each experiment, the record should capture the reproduction command, code
 revision, model revision, resolved dependencies, GPU type and count, dtype,
 workload, warmup policy, repetition count, and timing boundaries. It should also

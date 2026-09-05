@@ -3,8 +3,8 @@
 The project uses one shared implementation that becomes more capable at each
 stage. Stage directories hold small executable experiments and short write-ups,
 not 20 independent projects. Stage 0 GPU inspection, CPU/GPU matrix benchmark,
-and container-reuse experiment are complete. Its Volume experiment and the
-remaining stages are planned.
+and container-reuse experiment are complete. Its Volume experiment is ready to
+run, and the remaining stages are planned.
 
 See [Big Picture](big-picture.md) for the end-to-end architecture, the roles of
 the educational runtime and vLLM, and the intended capstone. This roadmap is the

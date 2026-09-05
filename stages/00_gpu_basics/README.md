@@ -2,7 +2,7 @@
 
 **Status:** I have completed GPU inspection, a small tensor operation, the
 CPU/GPU matrix benchmark, and the container-reuse experiment. Next I will compare
-ephemeral container storage with a Modal Volume.
+ephemeral container storage with a Modal Volume. The experiment is ready to run.
 
 ## Goal
 
@@ -19,6 +19,24 @@ Functions, container reuse, and Volumes.
 - [x] Compare the first and repeated invocations of one remote method.
 - [ ] Compare ephemeral container storage with a Modal Volume.
 - [ ] Write the final Stage 0 takeaways.
+
+## Code layout
+
+Each experiment has its own executable so its Modal resources, command-line
+options, and result artifact remain easy to identify.
+
+| File | Experiment |
+| --- | --- |
+| `inspect_gpu.py` | Inspect the remote GPU and run a small tensor operation |
+| `benchmark_matmul.py` | Compare CPU and GPU matrix multiplication |
+| `container_reuse.py` | Observe state across repeated remote calls |
+| `volume_persistence.py` | Compare container-local storage with a Volume |
+| `inference_lab/experiments.py` | Share timing, environment inspection, and result writing |
+
+Each remote Image explicitly includes the shared package with
+[`add_local_python_source`](https://modal.com/docs/guide/images#add-local-python-code-with-add-local-python-source).
+Running a file entrypoint uploads that file, but sibling modules should not be
+assumed to appear in the container automatically.
 
 ## Hypotheses
 
@@ -38,7 +56,7 @@ development environment.
 GPU inspection runs with:
 
 ```sh
-python -m modal run stages/00_gpu_basics/run.py
+python -m modal run stages/00_gpu_basics/inspect_gpu.py
 ```
 
 The remote Function reports the GPU name, VRAM, Python, NumPy, PyTorch, CUDA
@@ -54,7 +72,7 @@ The memory readings use PyTorch's
 The matrix benchmark runs with:
 
 ```sh
-python -m modal run stages/00_gpu_basics/run.py --benchmark
+python -m modal run stages/00_gpu_basics/benchmark_matmul.py
 ```
 
 It requests one T4, two CPU cores, 4 GiB of host memory, and a 180-second
@@ -79,7 +97,7 @@ The command automatically replaces the canonical result at
 An alternate output path can preserve an exploratory run:
 
 ```sh
-python -m modal run stages/00_gpu_basics/run.py --benchmark \
+python -m modal run stages/00_gpu_basics/benchmark_matmul.py \
   --warmup 5 --repeats 20 \
   --output benchmarks/results/raw/stage00-matmul-5x20.json
 ```
@@ -96,7 +114,7 @@ The analysis asks:
 The container-reuse experiment runs with:
 
 ```sh
-python -m modal run stages/00_gpu_basics/run.py --reuse --reuse-calls 3
+python -m modal run stages/00_gpu_basics/container_reuse.py --reuse-calls 3
 ```
 
 The local entrypoint calls one remote class method sequentially. A
@@ -115,6 +133,36 @@ model loading. The command writes its result to
 [`benchmarks/results/stage00-container-reuse.json`](../../benchmarks/results/stage00-container-reuse.json).
 Modal documents this lifecycle in
 [Container lifecycle hooks](https://modal.com/docs/guide/lifecycle-functions).
+
+## Modal Volume
+
+The final Stage 0 experiment runs with:
+
+```sh
+python -m modal run stages/00_gpu_basics/volume_persistence.py
+```
+
+This experiment uses CPU-only containers because it tests storage rather than
+GPU execution. A named Volume called `inference-first-principles-stage00` is
+mounted at `/stage00-volume`.
+
+The first container writes the same unique marker to two locations:
+
+- `/tmp/stage00-marker.txt` on the container's local filesystem
+- `/stage00-volume/stage00-marker.txt` on the mounted Volume
+
+The writer calls `commit()` before returning. The probe uses
+`single_use_containers=True`, so Modal terminates that container after its input.
+A fresh reader container then calls `reload()` and checks both paths.
+
+The experiment passes when the writer and reader have different container IDs,
+the `/tmp` marker is absent in the reader, and the Volume marker still contains
+the unique value written by the first container. The command writes the canonical
+result to `benchmarks/results/stage00-volume.json`.
+
+The fixed Volume path is overwritten on each run, preventing repeated experiments
+from accumulating marker files. Modal documents the commit and reload semantics
+in [Volumes](https://modal.com/docs/guide/volumes).
 
 ## Results and interpretation
 
@@ -138,9 +186,13 @@ for runtime initialization and first-use GPU work, while the repeated calls
 mostly exposed steady-state computation and RPC overhead. This state is an
 optimization opportunity rather than durable storage or a correctness guarantee.
 
+The Volume experiment will complete the comparison by forcing two separate
+containers to access the same named storage. Container-local state should vanish,
+while the committed Volume file should remain available independently of either
+container's lifetime.
+
 ## Remaining work
 
-I will next compare a container-local file with a file committed to a Modal
-Volume across container replacement. I will then write the final Stage 0
-takeaways and begin
+I will run the Volume experiment, record its interpretation, and then write the
+final Stage 0 takeaways before beginning
 [Stage 1](../../docs/roadmap.md#01--one-model-forward-pass).

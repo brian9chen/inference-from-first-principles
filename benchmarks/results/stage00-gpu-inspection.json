@@ -1,12 +1,12 @@
 {
   "schema_version": 1,
   "experiment": "stage00_gpu_inspection",
-  "recorded_at": "2026-09-04T21:21:41.051839+00:00",
+  "recorded_at": "2026-09-05T19:46:13.681881+00:00",
   "git": {
-    "commit": "4e1e8a6d8395f9fdff5e87dc33671fd7a5c728e9",
+    "commit": "0f72b87e720b6f013519ec51c358144c35dca2b6",
     "dirty": true
   },
-  "command": "python -m modal run stages/00_gpu_basics/run.py",
+  "command": "python -m modal run stages/00_gpu_basics/inspect_gpu.py",
   "data": {
     "gpu_name": "Tesla T4",
     "vram_total_gib": 14.56,

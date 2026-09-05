@@ -70,13 +70,13 @@ launching GPU experiments.
 Run the Stage 0 GPU inspection (uses billable Modal resources):
 
 ```sh
-python -m modal run stages/00_gpu_basics/run.py
+python -m modal run stages/00_gpu_basics/inspect_gpu.py
 ```
 
-Run the CPU/GPU matrix benchmark with `--benchmark`:
+Run the CPU/GPU matrix benchmark:
 
 ```sh
-python -m modal run stages/00_gpu_basics/run.py --benchmark
+python -m modal run stages/00_gpu_basics/benchmark_matmul.py
 ```
 
 The [Stage 0 notes](stages/00_gpu_basics/README.md) define the timing boundaries,
@@ -99,22 +99,26 @@ resolved software versions, model revision, hardware, and workload.
 ```text
 inference-from-first-principles/
 ├── README.md
-├── AGENTS.md
 ├── .gitignore
 ├── pyproject.toml
 ├── inference_lab/
-│   └── __init__.py
+│   ├── __init__.py
+│   └── experiments.py
 ├── stages/
 │   └── 00_gpu_basics/
 │       ├── README.md
-│       └── run.py
+│       ├── inspect_gpu.py
+│       ├── benchmark_matmul.py
+│       ├── container_reuse.py
+│       └── volume_persistence.py
 ├── benchmarks/
 │   ├── workloads/
 │   │   └── README.md
 │   └── results/
 │       ├── README.md
 │       ├── stage00-gpu-inspection.json
-│       └── stage00-matmul.json
+│       ├── stage00-matmul.json
+│       └── stage00-container-reuse.json
 ├── tests/
 │   └── README.md
 └── docs/
