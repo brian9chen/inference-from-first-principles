@@ -2,8 +2,8 @@
 
 The project uses one shared implementation that becomes more capable at each
 stage. Stage directories hold small executable experiments and short write-ups,
-not 20 independent projects. Stage 0 is complete, Stage 1 is next, and the
-remaining stages are planned.
+not 20 independent projects. Stage 0 is complete, Stage 1 is implemented and
+validated, and the remaining stages are planned. I am reviewing Stage 1 results.
 
 See [Big Picture](big-picture.md) for the end-to-end architecture, the roles of
 the educational runtime and vLLM, and the intended capstone. This roadmap is the
@@ -23,7 +23,7 @@ container reuse. Separate startup, transfer, and compute costs.
 
 ### 01 — One model forward pass
 
-**Status:** Next.
+**Status:** Implemented and validated; reviewing results.
 
 Directory: `stages/01_forward_pass/`
 

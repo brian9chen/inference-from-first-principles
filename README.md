@@ -9,7 +9,7 @@ I will begin with a single forward pass and manual token generation to learn abo
 I plan on running all GPU experiments on Modal. Each stage extends a shared Python
 implementation and I will record the main benchmarks/takeaways from each experiment and how it might apply to a real inference system.
 
-**Status:** Stage 0 complete; Stage 1 next
+**Status:** Stage 0 complete; Stage 1 implemented and validated, reviewing results
 
 ## Roadmap
 
@@ -81,13 +81,15 @@ python -m modal run stages/00_gpu_basics/benchmark_matmul.py
 
 The completed [Stage 0 notes](stages/00_gpu_basics/README.md) define the timing
 boundaries, link all four result artifacts, and summarize the conclusions. Stage
-1 begins with one direct language-model forward pass.
+1 begins with one direct language-model forward pass; its
+[notes](stages/01_forward_pass/README.md) include the implementation checklist
+and reproduction commands.
 
 ### Local environment versus GPU environment
 
 The local environment contains the Modal client and development tools. Stage 0
-installs NumPy and PyTorch in its remote GPU Image. Transformers and vLLM will be
-added when their stages need them. A local package installation does not automatically
+installs NumPy and PyTorch in its remote GPU Image. Stage 1 adds Transformers;
+vLLM is planned for Stage 9. A local package installation does not automatically
 configure a remote [Modal Image](https://modal.com/docs/guide/images).
 
 Dependency ranges in `pyproject.toml` are starter constraints, not an exact lock.
@@ -105,12 +107,15 @@ inference-from-first-principles/
 │   ├── __init__.py
 │   └── experiments.py
 ├── stages/
-│   └── 00_gpu_basics/
+│   ├── 00_gpu_basics/
+│   │   ├── README.md
+│   │   ├── inspect_gpu.py
+│   │   ├── benchmark_matmul.py
+│   │   ├── container_reuse.py
+│   │   └── volume_persistence.py
+│   └── 01_forward_pass/
 │       ├── README.md
-│       ├── inspect_gpu.py
-│       ├── benchmark_matmul.py
-│       ├── container_reuse.py
-│       └── volume_persistence.py
+│       └── forward_pass.py
 ├── benchmarks/
 │   ├── workloads/
 │   │   └── README.md
@@ -119,7 +124,8 @@ inference-from-first-principles/
 │       ├── stage00-gpu-inspection.json
 │       ├── stage00-matmul.json
 │       ├── stage00-container-reuse.json
-│       └── stage00-volume.json
+│       ├── stage00-volume.json
+│       └── stage01-forward-pass.json
 ├── tests/
 │   └── README.md
 └── docs/
