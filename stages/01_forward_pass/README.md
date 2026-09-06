@@ -1,7 +1,6 @@
 # Stage 1 — One model forward pass
 
-**Status:** Implemented and validated on Modal. I am reviewing the result before
-beginning Stage 2.
+**Status:** Complete. I validated the saved experiment and am beginning Stage 2.
 
 ## Goal
 
@@ -24,7 +23,7 @@ prompt position determine one next token?
 - [x] Record the requested GPU, dtype, Python, PyTorch, Transformers, and CUDA
   versions.
 - [x] Decide where the Hugging Face download cache lives without confusing files
-  on a Volume with weights already loaded int o VRAM.
+  on a Volume with weights already loaded into VRAM.
 
 ### 2. Load the tokenizer and model
 
@@ -98,7 +97,7 @@ PyTorch build, not the host driver.
 Run from the repository root with the local environment activated:
 
 ```sh
-python -m modal run stages/01_forward_pass/forward_pass.py
+python -m modal run stages/01_forward_pass/forward_pass.py --prompt "Poker is a game of"
 ```
 
 An alternate prompt and disposable result path can be supplied:
@@ -142,6 +141,18 @@ training, those positions provide many prediction targets in parallel. At
 inference, the final position has seen the entire prompt, so its scores determine
 the next token after that prompt.
 
+The recorded `attention_mask` marks valid input tokens: one for real tokens and
+zero for padding. This prompt has no padding, so every entry is one. This is not
+the causal mask. Transformers combines this input mask with a causal restriction
+internally, preventing each position from attending to later positions. Prompt
+positions can be processed together within each layer; layers run sequentially.
+
+I implemented loading, tokenization, CPU-to-GPU transfers, the direct model call,
+and next-token selection. Transformers implements the actual forward-pass math:
+embeddings, attention, feed-forward layers, normalization, and vocabulary scores.
+The GPU executes that computation during `model(...)`; the stage does more than
+transfer tensors. This is prompt prefill without retaining a KV cache.
+
 Logits are unnormalized scores: they may be negative and do not sum to one.
 Softmax would convert them to probabilities, but greedy selection only needs
 `argmax`, which has the same result before or after softmax.
@@ -165,9 +176,9 @@ prompt
   -> decoded token
 ```
 
-## Completion criteria
+## Next stage
 
-Stage 1 is complete when the pinned experiment runs on Modal, produces one token
-from a direct model forward pass, records the tensor shapes and environment in a
-canonical result artifact, and explains the result without using a generation
-helper.
+In [Stage 2](../02_autoregressive_decode/README.md), I will append the selected
+token to the input and repeat until an end-of-sequence token or output limit is
+reached. Without KV caching, each iteration recomputes the entire growing prefix.
+Stage 3 adds sampling; Stage 4 introduces KV caching to reuse earlier work.

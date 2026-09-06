@@ -15,6 +15,10 @@ Stage 0 records:
 - [`stage00-container-reuse.json`](stage00-container-reuse.json)
 - [`stage00-volume.json`](stage00-volume.json)
 
+Stage 1 records:
+
+- [`stage01-forward-pass.json`](stage01-forward-pass.json)
+
 For each experiment, the record should capture the reproduction command, code
 revision, model revision, resolved dependencies, GPU type and count, dtype,
 workload, warmup policy, repetition count, and timing boundaries. It should also

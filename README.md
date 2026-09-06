@@ -9,7 +9,7 @@ I will begin with a single forward pass and manual token generation to learn abo
 I plan on running all GPU experiments on Modal. Each stage extends a shared Python
 implementation and I will record the main benchmarks/takeaways from each experiment and how it might apply to a real inference system.
 
-**Status:** Stage 0 complete; Stage 1 implemented and validated, reviewing results
+**Status:** Stages 0–1 complete; planning Stage 2
 
 ## Roadmap
 
@@ -80,10 +80,11 @@ python -m modal run stages/00_gpu_basics/benchmark_matmul.py
 ```
 
 The completed [Stage 0 notes](stages/00_gpu_basics/README.md) define the timing
-boundaries, link all four result artifacts, and summarize the conclusions. Stage
-1 begins with one direct language-model forward pass; its
-[notes](stages/01_forward_pass/README.md) include the implementation checklist
-and reproduction commands.
+boundaries, link all four result artifacts, and summarize the conclusions.
+[Stage 1](stages/01_forward_pass/README.md) records one direct language-model
+forward pass and greedy next-token selection. The
+[Stage 2 plan](stages/02_autoregressive_decode/README.md) extends this into manual
+autoregressive generation without KV caching.
 
 ### Local environment versus GPU environment
 
@@ -113,9 +114,11 @@ inference-from-first-principles/
 │   │   ├── benchmark_matmul.py
 │   │   ├── container_reuse.py
 │   │   └── volume_persistence.py
-│   └── 01_forward_pass/
-│       ├── README.md
-│       └── forward_pass.py
+│   ├── 01_forward_pass/
+│   │   ├── README.md
+│   │   └── forward_pass.py
+│   └── 02_autoregressive_decode/
+│       └── README.md
 ├── benchmarks/
 │   ├── workloads/
 │   │   └── README.md
@@ -152,10 +155,7 @@ project grows.
 
 - Build one shared implementation across the stages.
 - Write the initial generation loop without `model.generate()`.
-- Keep experiments small and reproducible, and distinguish hypotheses from
-  measured results.
 - Explain results and their implications, including limitations.
-- Keep credentials, downloaded model weights, and large raw outputs out of Git.
 - Distinguish Modal request batching/concurrency from token-level continuous
   batching inside an inference runtime; explore their interaction in Stages 7
   and 11. See [Modal input concurrency](https://modal.com/docs/guide/concurrent-inputs).

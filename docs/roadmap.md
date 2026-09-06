@@ -2,8 +2,8 @@
 
 The project uses one shared implementation that becomes more capable at each
 stage. Stage directories hold small executable experiments and short write-ups,
-not 20 independent projects. Stage 0 is complete, Stage 1 is implemented and
-validated, and the remaining stages are planned. I am reviewing Stage 1 results.
+not 20 independent projects. Stages 0–1 are complete. I am planning Stage 2;
+the remaining stages are planned.
 
 See [Big Picture](big-picture.md) for the end-to-end architecture, the roles of
 the educational runtime and vLLM, and the intended capstone. This roadmap is the
@@ -23,7 +23,7 @@ container reuse. Separate startup, transfer, and compute costs.
 
 ### 01 — One model forward pass
 
-**Status:** Implemented and validated; reviewing results.
+**Status:** Complete.
 
 Directory: `stages/01_forward_pass/`
 
@@ -33,11 +33,15 @@ dimensions of the tensors and how logits map to vocabulary tokens.
 
 ### 02 — Manual autoregressive decoding
 
+**Status:** Planned; implementation next.
+
 Directory: `stages/02_autoregressive_decode/`
 
 Write the generation loop: forward pass → logits → next token → append → repeat.
 Do not use `model.generate()`. Handle an end-of-sequence token and a maximum
-output length explicitly.
+output length explicitly. Keep KV caching disabled and recompute the full growing
+prefix at each step. See the
+[Stage 2 plan](../stages/02_autoregressive_decode/README.md).
 
 ### 03 — Sampling
 
