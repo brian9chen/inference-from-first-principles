@@ -8,13 +8,12 @@ Tracked result files represent the selected reproducible run for an experiment.
 Rerunning the corresponding command replaces that file. Alternate or disposable
 runs can be sent to `raw/` with `--output`; Git ignores that directory.
 
-Stage 0 currently records:
+Stage 0 records:
 
 - [`stage00-gpu-inspection.json`](stage00-gpu-inspection.json)
 - [`stage00-matmul.json`](stage00-matmul.json)
 - [`stage00-container-reuse.json`](stage00-container-reuse.json)
-
-The Volume experiment will add `stage00-volume.json`.
+- [`stage00-volume.json`](stage00-volume.json)
 
 For each experiment, the record should capture the reproduction command, code
 revision, model revision, resolved dependencies, GPU type and count, dtype,

@@ -1,0 +1,44 @@
+{
+  "schema_version": 1,
+  "experiment": "stage00_volume_persistence",
+  "recorded_at": "2026-09-06T04:46:20.100922+00:00",
+  "git": {
+    "commit": "3eb4a635efa57fdb51fce7f2cc506b6b68d42ccf",
+    "dirty": false
+  },
+  "command": "python -m modal run stages/00_gpu_basics/volume_persistence.py",
+  "data": {
+    "volume_name": "inference-first-principles-stage00",
+    "marker": "7591dc65db57413391228dee3adf63f2",
+    "different_containers": true,
+    "local_was_ephemeral": true,
+    "volume_persisted": true,
+    "passed": true,
+    "writer": {
+      "container_id": "ed281ca933b8470ebbdd333a49a48bc1",
+      "hostname": "modal",
+      "pid": 2,
+      "action": "write",
+      "local_path": "/tmp/stage00-marker.txt",
+      "local_exists": true,
+      "local_value": "7591dc65db57413391228dee3adf63f2",
+      "volume_path": "/stage00-volume/stage00-marker.txt",
+      "volume_exists": true,
+      "volume_value": "7591dc65db57413391228dee3adf63f2",
+      "caller_wall_ms": 3291.1738749826327
+    },
+    "reader": {
+      "container_id": "e380036c790e45369ee75c2cfe12da1b",
+      "hostname": "modal",
+      "pid": 2,
+      "action": "read",
+      "local_path": "/tmp/stage00-marker.txt",
+      "local_exists": false,
+      "local_value": null,
+      "volume_path": "/stage00-volume/stage00-marker.txt",
+      "volume_exists": true,
+      "volume_value": "7591dc65db57413391228dee3adf63f2",
+      "caller_wall_ms": 2735.694916045759
+    }
+  }
+}

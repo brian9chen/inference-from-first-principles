@@ -4,12 +4,12 @@ Hi there!
 
 My goal is to learn as much as possible about LLM inference by building an inference engine and the serving infra around it from first principles. This repository will document my progress as I learn about and build an increasingly capable inference system.
 
-I will begin with basic one forward pass and manual token generation to learn about concepts like prefill, decoding, and how the KV cache grows for each new request. Then, I will build an inference system that implements batching, serving, routing, and distributed execution. Along the way, I hope to learn about lots of topics that are new to me including GPU architecture, the associated constraints that appear under high inference load, and how one request may run on multiple GPUs (multi-GPU serving).
+I will begin with a single forward pass and manual token generation to learn about concepts like prefill, decoding, and how the KV cache grows for each new request. Then, I will build an inference system that implements batching, serving, routing, and distributed execution. Along the way, I hope to learn about lots of topics that are new to me including GPU architecture, the associated constraints that appear under high inference load, and how one request may run on multiple GPUs (multi-GPU serving).
 
-I plan on runnning all GPU experiments on Modal. Each stage extends a shared Python
+I plan on running all GPU experiments on Modal. Each stage extends a shared Python
 implementation and I will record the main benchmarks/takeaways from each experiment and how it might apply to a real inference system.
 
-**Status:** Stage 0
+**Status:** Stage 0 complete; Stage 1 next
 
 ## Roadmap
 
@@ -79,9 +79,9 @@ Run the CPU/GPU matrix benchmark:
 python -m modal run stages/00_gpu_basics/benchmark_matmul.py
 ```
 
-The [Stage 0 notes](stages/00_gpu_basics/README.md) define the timing boundaries,
-result artifacts, and remaining experiments. GPU inspection, the CPU/GPU matrix
-benchmark, and the container-reuse experiment are complete.
+The completed [Stage 0 notes](stages/00_gpu_basics/README.md) define the timing
+boundaries, link all four result artifacts, and summarize the conclusions. Stage
+1 begins with one direct language-model forward pass.
 
 ### Local environment versus GPU environment
 
@@ -118,7 +118,8 @@ inference-from-first-principles/
 │       ├── README.md
 │       ├── stage00-gpu-inspection.json
 │       ├── stage00-matmul.json
-│       └── stage00-container-reuse.json
+│       ├── stage00-container-reuse.json
+│       └── stage00-volume.json
 ├── tests/
 │   └── README.md
 └── docs/

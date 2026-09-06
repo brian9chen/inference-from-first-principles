@@ -1,8 +1,8 @@
 # Stage 0 — Modal + GPU basics
 
-**Status:** I have completed GPU inspection, a small tensor operation, the
-CPU/GPU matrix benchmark, and the container-reuse experiment. Next I will compare
-ephemeral container storage with a Modal Volume. The experiment is ready to run.
+**Status:** Complete. I inspected a remote GPU, measured CPU and GPU matrix
+multiplication, observed warm-container reuse, and confirmed that a Modal Volume
+persists data across separate containers.
 
 ## Goal
 
@@ -17,8 +17,8 @@ Functions, container reuse, and Volumes.
 - [x] Execute a tensor operation on the GPU.
 - [x] Compare CPU and GPU matrix multiplication at several sizes.
 - [x] Compare the first and repeated invocations of one remote method.
-- [ ] Compare ephemeral container storage with a Modal Volume.
-- [ ] Write the final Stage 0 takeaways.
+- [x] Compare ephemeral container storage with a Modal Volume.
+- [x] Write the final Stage 0 takeaways.
 
 ## Code layout
 
@@ -38,7 +38,7 @@ Each remote Image explicitly includes the shared package with
 Running a file entrypoint uploads that file, but sibling modules should not be
 assumed to appear in the container automatically.
 
-## Hypotheses
+## Hypotheses tested
 
 - GPU acceleration will become more useful as matrix size grows.
 - Transfer overhead will make the GPU less useful for small operations.
@@ -158,7 +158,8 @@ A fresh reader container then calls `reload()` and checks both paths.
 The experiment passes when the writer and reader have different container IDs,
 the `/tmp` marker is absent in the reader, and the Volume marker still contains
 the unique value written by the first container. The command writes the canonical
-result to `benchmarks/results/stage00-volume.json`.
+result to
+[`benchmarks/results/stage00-volume.json`](../../benchmarks/results/stage00-volume.json).
 
 The fixed Volume path is overwritten on each run, preventing repeated experiments
 from accumulating marker files. Modal documents the commit and reload semantics
@@ -186,13 +187,44 @@ for runtime initialization and first-use GPU work, while the repeated calls
 mostly exposed steady-state computation and RPC overhead. This state is an
 optimization opportunity rather than durable storage or a correctness guarantee.
 
-The Volume experiment will complete the comparison by forcing two separate
-containers to access the same named storage. Container-local state should vanish,
-while the committed Volume file should remain available independently of either
-container's lifetime.
+The Volume experiment forced separate writer and reader containers. The reader
+could not see the writer's container-local file, but it could read the marker
+committed to the named Volume. This confirms that a Volume can outlive any one
+container, while local files cannot be relied on after replacement.
 
-## Remaining work
+A Volume makes files durable; it does not keep Python objects or CUDA tensors
+alive. Later stages can use a Volume to avoid downloading model weights again,
+but each new container must still load those weights into host memory and VRAM.
 
-I will run the Volume experiment, record its interpretation, and then write the
-final Stage 0 takeaways before beginning
-[Stage 1](../../docs/roadmap.md#01--one-model-forward-pass).
+## Stage 0 takeaways
+
+I now distinguish the main Modal abstractions used in this project:
+
+| Concept | Role |
+| --- | --- |
+| Image | Defines the software and files available when a container starts |
+| Function or class | Defines remote code and its CPU, memory, GPU, and scaling settings |
+| Container | Runs the code and may be reused, replaced, or scaled away |
+| Volume | Stores committed files independently of a container's lifetime |
+
+The experiments also established several measurement and design principles:
+
+- GPU speed depends on the amount of parallel computation and on where the data
+  already resides. Transfer costs can erase the benefit of a small GPU operation.
+- CUDA work is asynchronous, so timing requires explicit synchronization around
+  the intended boundary.
+- Warm containers can retain imports, CUDA state, and tensors, which greatly
+  reduces repeated-call setup work. This reuse is an optimization rather than a
+  persistence guarantee.
+- Persistent storage and warm process state solve different problems. Volumes
+  preserve files; reused containers preserve live in-memory state while they
+  remain available.
+- Reproducible experiments need the environment, configuration, timing boundary,
+  code revision, and raw measurements recorded outside the narrative README.
+
+## Next
+
+In [Stage 1](../../docs/roadmap.md#01--one-model-forward-pass), I will load a
+small decoder-only language model, tokenize one prompt, execute `model(...)`
+directly, inspect the logits, and manually select one next token without using a
+generation helper.

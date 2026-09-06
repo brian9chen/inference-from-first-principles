@@ -2,9 +2,8 @@
 
 The project uses one shared implementation that becomes more capable at each
 stage. Stage directories hold small executable experiments and short write-ups,
-not 20 independent projects. Stage 0 GPU inspection, CPU/GPU matrix benchmark,
-and container-reuse experiment are complete. Its Volume experiment is ready to
-run, and the remaining stages are planned.
+not 20 independent projects. Stage 0 is complete, Stage 1 is next, and the
+remaining stages are planned.
 
 See [Big Picture](big-picture.md) for the end-to-end architecture, the roles of
 the educational runtime and vLLM, and the intended capstone. This roadmap is the
@@ -14,6 +13,8 @@ detailed stage-by-stage implementation and experiment plan.
 
 ### 00 — Modal + GPU basics
 
+**Status:** Complete.
+
 Directory: `stages/00_gpu_basics/`
 
 Run a Modal GPU Function, inspect GPU type and VRAM, run a tensor operation, and
@@ -21,6 +22,8 @@ compare CPU versus GPU execution. Understand Images, Functions, Volumes, and
 container reuse. Separate startup, transfer, and compute costs.
 
 ### 01 — One model forward pass
+
+**Status:** Next.
 
 Directory: `stages/01_forward_pass/`
 
