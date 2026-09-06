@@ -106,7 +106,8 @@ inference-from-first-principles/
 ├── pyproject.toml
 ├── inference_lab/
 │   ├── __init__.py
-│   └── experiments.py
+│   ├── experiments.py
+│   └── model.py
 ├── stages/
 │   ├── 00_gpu_basics/
 │   │   ├── README.md

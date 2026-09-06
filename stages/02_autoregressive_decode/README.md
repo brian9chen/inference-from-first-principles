@@ -17,12 +17,12 @@ processed together?
 
 ### 1. Reuse the Stage 1 loading setup
 
-- [ ] Extract pinned tokenizer/model loading into `inference_lab/model.py`.
-- [ ] Update Stage 1 to use the helper while preserving its timing boundaries,
-  validation, and result format.
+- [x] Copy pinned tokenizer/model loading into `inference_lab/model.py`.
+- [x] Preserve Stage 1's original loading and forward-pass code.
+- [ ] Use the shared loader in the Stage 2 experiment.
 - [ ] Retain the model revision, T4, float32, eager attention, and Volume cache
   from Stage 1 so generation is the main experimental change.
-- [ ] Keep PyTorch and Transformers imports inside remote loading code.
+- [x] Keep PyTorch and Transformers runtime imports inside the loading function.
 
 ### 2. Build the Modal experiment
 

@@ -82,9 +82,8 @@ prompt position determine one next token?
 | `inference_lab/experiments.py` | Existing environment, timing, Git metadata, and result helpers |
 | `benchmarks/results/stage01-forward-pass.json` | Generated canonical result |
 
-I plan to move reusable loading into `inference_lab/` at the start of Stage 2.
-The direct `model(...)`, final-position indexing, `argmax`, and decoding steps
-remain visible in the stage script.
+I keep the original loading and forward-pass code in this script as a completed
+experiment. Stage 2 will use the shared loader in `inference_lab/model.py`.
 
 ## Method and reproduction
 
