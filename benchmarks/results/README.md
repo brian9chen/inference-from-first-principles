@@ -23,6 +23,11 @@ Stage 2 records:
 
 - [`stage02-autoregressive-decode.json`](stage02-autoregressive-decode.json)
 
+Stage 3 records:
+
+- [`stage03-sampling.json`](stage03-sampling.json): initial shared-generation
+  greedy baseline; sampled comparisons remain planned.
+
 For each experiment, the record should capture the reproduction command, code
 revision, model revision, resolved dependencies, GPU type and count, dtype,
 workload, warmup policy, repetition count, and timing boundaries. It should also

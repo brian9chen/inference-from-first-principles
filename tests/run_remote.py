@@ -22,7 +22,7 @@ app = modal.App("inference-runtime-tests")
 def run_tests() -> int:
     import pytest
 
-    return int(pytest.main(["-q", "/workspace/tests/test_autoregressive_decode.py"]))
+    return int(pytest.main(["-q", "/workspace/tests"]))
 
 
 @app.local_entrypoint()

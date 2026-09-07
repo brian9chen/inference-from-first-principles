@@ -2,7 +2,7 @@
 
 The project uses one shared implementation that becomes more capable at each
 stage. Stage directories hold small executable experiments and short write-ups,
-not 20 independent projects. Stages 0–2 are complete. I am planning Stage 3;
+not 20 independent projects. Stages 0–2 are complete. I am implementing Stage 3;
 later stages are planned.
 
 See [Big Picture](big-picture.md) for the end-to-end architecture, the roles of
@@ -45,7 +45,7 @@ prefix at each step. See the
 
 ### 03 — Sampling
 
-**Status:** Planned; implementation next.
+**Status:** In progress; shared generation implemented, sampler next.
 
 Directory: `stages/03_sampling/`
 
@@ -54,8 +54,8 @@ changes the choice from a given set of logits. The transformer forward-pass
 algorithm stays the same, although a different selected token changes the input
 to subsequent forward passes.
 
-I will build shared generation and sampling components in `inference_runtime/`, while
-preserving the Stage 1 and Stage 2 scripts. See the
+I have added shared generation in `inference_runtime/`, preserving the Stage 1 and
+Stage 2 scripts. Sampling is next. See the
 [Stage 3 plan](../stages/03_sampling/README.md) for fixed-logit comparisons,
 controlled sampling tests, and seeded generation experiments.
 

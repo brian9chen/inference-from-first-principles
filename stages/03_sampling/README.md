@@ -1,6 +1,6 @@
 # Stage 3 — Sampling
 
-**Status:** Planned. Implementation is next.
+**Status:** In progress. Shared generation is implemented; the sampler is next.
 
 ## Goal
 
@@ -31,13 +31,13 @@ selection changes the next input; the model's layer computation is unchanged.
 
 ### 1. Establish the shared generation path
 
-- [ ] Copy the reusable Stage 2 loop into `inference_runtime/generation.py`, preserving
+- [x] Copy the reusable Stage 2 loop into `inference_runtime/generation.py`, preserving
   the original Stage 1 and Stage 2 scripts.
-- [ ] Make token selection configurable so greedy and sampled generation share
+- [x] Make token selection configurable so greedy and sampled generation share
   input growth, EOS handling, token budgets, and context validation.
-- [ ] Reuse `inference_runtime/model.py` and retain the model revision, T4, float32,
+- [x] Reuse `inference_runtime/model.py` and retain the model revision, T4, float32,
   eager attention, and `use_cache=False`.
-- [ ] Keep the shared runtime independent of stage scripts and Modal app setup;
+- [x] Keep the shared runtime independent of stage scripts and Modal app setup;
   keep experiment configuration and artifact writing in the stage executable.
 
 ### 2. Implement the sampler
@@ -67,9 +67,10 @@ selection changes the next input; the model's layer computation is unchanged.
 
 ### 4. Compare generated continuations
 
-- [ ] Add `stages/03_sampling/sample.py` with prompt, output budget, selection
-  settings, seed, and result-path arguments.
-- [ ] Establish a greedy baseline that matches Stage 2 under identical conditions.
+- [x] Add `stages/03_sampling/sample.py` with prompt, output budget, and result-path
+  arguments.
+- [ ] Extend the executable with selection settings and seed arguments.
+- [x] Establish a greedy baseline that matches Stage 2 under identical conditions.
 - [ ] Compare unfiltered sampling, temperature changes, top-k, and top-p using
   short continuations and a small fixed seed list.
 - [ ] Repeat sampled generation with the same seed and configuration to check
@@ -87,9 +88,11 @@ selection changes the next input; the model's layer computation is unchanged.
   excluded tokens have zero probability.
 - [ ] Check seeded repeatability and sample frequencies against a known small
   distribution with a fixed seed, enough draws, and a statistical tolerance.
-- [ ] Preserve the existing EOS, zero-budget, length, and context-boundary tests
+- [x] Preserve the existing EOS, zero-budget, length, and context-boundary tests
   for the new shared generation loop; keep testing the Stage 2 reference too.
-- [ ] Extend the CPU test runner to execute sampling and generation tests.
+- [x] Extend the CPU test runner to execute shared generation tests, including
+  custom selection and a seeded sampling callback.
+- [ ] Add the sampler's probability and filtering tests to the CPU suite.
 - [ ] Automatically write `benchmarks/results/stage03-sampling.json`, including
   model/environment metadata, settings, seeds, generated IDs, stop reasons, checks,
   and fixed-logit diagnostics. Keep large sweeps under `benchmarks/results/raw/`.
@@ -104,18 +107,53 @@ selection changes the next input; the model's layer computation is unchanged.
 - [ ] Discuss repeatability limits, variability, and the limits of judging quality
   from short examples before beginning KV caching in Stage 4.
 
-## Planned code boundaries
+## Code boundaries
 
 | File | Responsibility |
 | --- | --- |
 | `inference_runtime/model.py` | Existing pinned model and tokenizer loading |
-| `inference_runtime/sampling.py` | Selection settings, filtering, probabilities, and token selection |
+| `inference_runtime/sampling.py` (planned) | Selection settings, filtering, probabilities, and token selection |
 | `inference_runtime/generation.py` | Shared autoregressive loop and stopping behavior |
 | `stages/03_sampling/sample.py` | Modal setup, controlled comparisons, diagnostics, and result recording |
 
-The runtime will return generated IDs and stop information without requiring an
-experiment entrypoint. Experiment metadata and saved reports remain separate from
-the generation API.
+`generate_tokens(model, inputs, max_new_tokens, eos_token_ids, select_token=...)`
+accepts a loaded model and one unpadded tokenized prompt. The selector receives
+final-position logits shaped `[1, vocabulary_size]` and returns a token-ID tensor
+shaped `[1, 1]` with the input IDs' dtype and device. Greedy selection is the
+default; a sampling callable will capture its settings and random generator.
+
+The loop owns prefix and attention-mask growth, EOS stopping, budget/context
+validation, and synchronized forward-pass timing. It returns IDs, stop information,
+and per-step diagnostics. Selection runs outside the forward-pass timing boundary.
+Loading, Modal configuration, text decoding, comparisons, and artifact writing
+remain in the stage executable.
+
+## Run the shared greedy baseline
+
+From the repository root with the local environment activated:
+
+```sh
+python -m modal run stages/03_sampling/sample.py
+```
+
+The executable currently runs greedy generation twice on the pinned T4 setup and
+compares token IDs and stop reasons with the Stage 2 artifact. Comparisons skip
+when the prompt, tokenization, configuration, or recorded environment differs.
+Arguments include `--prompt`, `--max-new-tokens`, and `--output`.
+
+The command automatically writes
+[`stage03-sampling.json`](../../benchmarks/results/stage03-sampling.json), labeled
+`shared_generation_greedy_baseline`. This is the initial generation check;
+temperature, top-k, top-p, and fixed-logit diagnostics remain planned.
+
+The saved run matches the Stage 2 token IDs and stop reason in both repeats. This
+checks that extracting the loop preserved greedy behavior under the pinned setup.
+
+Run the shared-loop and Stage 2 reference tests with:
+
+```sh
+python -m modal run tests/run_remote.py
+```
 
 ## Hypothesis and method
 
@@ -124,7 +162,7 @@ without mixing in changes to the prefix. Lower temperatures should concentrate
 probability; top-k limits candidate count, while top-p adapts that count to the
 distribution. Full continuations will then show how selections alter later inputs.
 
-I will compare greedy output with the Stage 2 artifact before evaluating sampled
+I compare greedy output with the Stage 2 artifact before evaluating sampled
 output. A fixed seed makes a run repeatable only within the tested implementation
 and environment; identical output across devices or library versions is not a
 completion requirement. Sampling adds variability but does not guarantee accuracy
@@ -135,8 +173,8 @@ or coherence, and higher temperature does not guarantee a different token.
 Stage 3 is complete when the shared runtime generates with both greedy and sampled
 selection, the sampler passes controlled probability/filtering tests, greedy
 generation matches Stage 2, and the Modal experiment saves a reproducible result
-artifact. Reproduction commands and measured interpretation will be added with
-the implementation.
+artifact. Sampling reproduction commands and interpretation will be added with
+the sampler implementation.
 
 ## References
 

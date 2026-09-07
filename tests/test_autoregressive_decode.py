@@ -2,7 +2,6 @@ import importlib.util
 import sys
 from copy import deepcopy
 from pathlib import Path
-from types import SimpleNamespace
 
 import pytest
 
@@ -19,48 +18,18 @@ def stage():
     return module
 
 
-@pytest.fixture
-def torch():
-    return pytest.importorskip(
-        "torch", reason="Run tensor tests in the remote test Image."
-    )
+@pytest.fixture(params=["stage2", "shared"])
+def decode(request):
+    if request.param == "stage2":
+        return request.getfixturevalue("stage").greedy_decode
+    from inference_runtime.generation import generate_tokens
+
+    return generate_tokens
 
 
-@pytest.fixture
-def inputs(torch):
-    return {
-        "input_ids": torch.tensor([[1, 2]]),
-        "attention_mask": torch.ones((1, 2), dtype=torch.long),
-    }
-
-
-@pytest.fixture
-def model_factory(torch):
-    class ScriptedModel:
-        def __init__(self, tokens, context=16, nonfinite=False):
-            self.tokens = tokens
-            self.device = torch.device("cpu")
-            self.config = SimpleNamespace(vocab_size=8, max_position_embeddings=context)
-            self.calls = []
-            self.nonfinite = nonfinite
-
-        def __call__(self, *, input_ids, attention_mask, use_cache):
-            assert use_cache is False
-            assert not torch.is_grad_enabled()
-            assert attention_mask.shape == input_ids.shape
-            assert attention_mask.eq(1).all().item()
-            token = self.tokens[len(self.calls)]
-            self.calls.append(input_ids[0].tolist())
-            logits = torch.zeros(1, input_ids.shape[1], self.config.vocab_size)
-            logits[0, -1, token] = float("nan") if self.nonfinite else 10
-            return SimpleNamespace(logits=logits)
-
-    return ScriptedModel
-
-
-def test_length_limit_and_full_prefix_growth(stage, model_factory, inputs):
+def test_length_limit_and_full_prefix_growth(decode, model_factory, inputs):
     model = model_factory([4, 6, 7])
-    result = stage.greedy_decode(model, inputs, 3, (0,))
+    result = decode(model, inputs, 3, (0,))
     assert result["passed"]
     assert result["stop_reason"] == "max_new_tokens"
     assert result["generated_token_ids"] == [4, 6, 7]
@@ -85,10 +54,10 @@ def test_length_limit_and_full_prefix_growth(stage, model_factory, inputs):
     ],
 )
 def test_eos_stops_without_extra_call(
-    stage, model_factory, inputs, tokens, budget, eos, expected
+    decode, model_factory, inputs, tokens, budget, eos, expected
 ):
     model = model_factory(tokens)
-    result = stage.greedy_decode(model, inputs, budget, eos)
+    result = decode(model, inputs, budget, eos)
     assert result["passed"]
     assert result["generated_token_ids"] == expected
     assert result["stop_reason"] == "eos_token"
@@ -96,9 +65,9 @@ def test_eos_stops_without_extra_call(
     assert result["all_token_ids"][-1] in eos
 
 
-def test_zero_budget_does_not_call_model(stage, model_factory, inputs):
+def test_zero_budget_does_not_call_model(decode, model_factory, inputs):
     model = model_factory([])
-    result = stage.greedy_decode(model, inputs, 0, (0,))
+    result = decode(model, inputs, 0, (0,))
     assert result["passed"]
     assert result["generated_token_ids"] == []
     assert result["all_token_ids"] == [1, 2]
@@ -109,30 +78,30 @@ def test_zero_budget_does_not_call_model(stage, model_factory, inputs):
 
 @pytest.mark.parametrize("budget,context", [(-1, 16), (3, 4), (0, 1)])
 def test_invalid_budget_or_context_fails_before_forward(
-    stage, model_factory, inputs, budget, context
+    decode, model_factory, inputs, budget, context
 ):
     model = model_factory([], context=context)
     with pytest.raises(ValueError):
-        stage.greedy_decode(model, inputs, budget, (0,))
+        decode(model, inputs, budget, (0,))
     assert model.calls == []
 
 
-def test_exact_context_budget_is_allowed(stage, model_factory, inputs):
-    result = stage.greedy_decode(model_factory([4, 6], context=4), inputs, 2, (0,))
+def test_exact_context_budget_is_allowed(decode, model_factory, inputs):
+    result = decode(model_factory([4, 6], context=4), inputs, 2, (0,))
     assert result["passed"]
     assert result["all_token_ids"] == [1, 2, 4, 6]
 
 
-def test_nonfinite_logits_are_rejected(stage, model_factory, inputs):
+def test_nonfinite_logits_are_rejected(decode, model_factory, inputs):
     with pytest.raises(RuntimeError, match="non-finite"):
-        stage.greedy_decode(model_factory([4], nonfinite=True), inputs, 1, (0,))
+        decode(model_factory([4], nonfinite=True), inputs, 1, (0,))
 
 
-def test_padding_is_rejected(stage, model_factory, inputs):
+def test_padding_is_rejected(decode, model_factory, inputs):
     inputs["attention_mask"][0, 0] = 0
     model = model_factory([])
     with pytest.raises(ValueError, match="padding"):
-        stage.greedy_decode(model, inputs, 1, (0,))
+        decode(model, inputs, 1, (0,))
     assert model.calls == []
 
 
