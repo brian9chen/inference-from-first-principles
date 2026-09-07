@@ -14,7 +14,7 @@ dependencies = ["modal>=1.5,<2"]
 dev = ["pytest>=8", "ruff>=0.12"]
 
 [tool.setuptools.packages.find]
-include = ["inference_lab*"]
+include = ["inference_runtime*"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

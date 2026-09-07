@@ -9,7 +9,7 @@ I will begin with a single forward pass and manual token generation to learn abo
 I plan on running all GPU experiments on Modal. Each stage extends a shared Python
 implementation and I will record the main benchmarks/takeaways from each experiment and how it might apply to a real inference system.
 
-**Status:** Stages 0–1 complete; Stage 2 implemented and validated, reviewing results
+**Status:** Stages 0–2 complete; planning Stage 3
 
 ## Roadmap
 
@@ -40,14 +40,14 @@ source .venv/bin/activate
 python -m pip install -e '.[dev]'
 ```
 
-The editable install (`-e`) lets scripts import `inference_lab` while its source
+The editable install (`-e`) lets scripts import `inference_runtime` while its source
 changes. The `dev` extra installs Ruff for linting and formatting, plus pytest.
 The environment must be reactivated in each new terminal session.
 
 Verify the local setup:
 
 ```sh
-python -c "import inference_lab; print(inference_lab.__file__)"
+python -c "import inference_runtime; print(inference_runtime.__file__)"
 python -m modal --version
 python -m ruff check .
 python -m ruff format --check .
@@ -84,8 +84,10 @@ The completed [Stage 0 notes](stages/00_gpu_basics/README.md) define the timing
 boundaries, link all four result artifacts, and summarize the conclusions.
 [Stage 1](stages/01_forward_pass/README.md) records one direct language-model
 forward pass and greedy next-token selection. The
-[Stage 2 experiment](stages/02_autoregressive_decode/README.md) extends this into manual
-autoregressive generation without KV caching.
+[Stage 2 experiment](stages/02_autoregressive_decode/README.md) extends this into
+manual autoregressive generation without KV caching. The
+[Stage 3 plan](stages/03_sampling/README.md) adds temperature, top-k, and top-p
+sampling to a shared generation loop.
 
 ### Local environment versus GPU environment
 
@@ -105,7 +107,7 @@ inference-from-first-principles/
 ├── README.md
 ├── .gitignore
 ├── pyproject.toml
-├── inference_lab/
+├── inference_runtime/
 │   ├── __init__.py
 │   ├── experiments.py
 │   └── model.py
@@ -119,9 +121,11 @@ inference-from-first-principles/
 │   ├── 01_forward_pass/
 │   │   ├── README.md
 │   │   └── forward_pass.py
-│   └── 02_autoregressive_decode/
-│       ├── README.md
-│       └── generate.py
+│   ├── 02_autoregressive_decode/
+│   │   ├── README.md
+│   │   └── generate.py
+│   └── 03_sampling/
+│       └── README.md
 ├── benchmarks/
 │   ├── workloads/
 │   │   └── README.md
@@ -142,7 +146,7 @@ inference-from-first-principles/
     └── roadmap.md
 ```
 
-- `inference_lab/`: reusable model, generation, sampling, cache, batching,
+- `inference_runtime/`: reusable model, generation, sampling, cache, batching,
   scheduling, routing, metrics, and serving code, added as needed.
 - `stages/`: small experiments that import the shared implementation. Add each
   stage directory when work on that stage begins.
@@ -153,9 +157,12 @@ inference-from-first-principles/
 - `docs/`: the end-to-end plan, detailed roadmap, and later explanations of
   runtime and infrastructure design decisions.
 
-`__init__.py` marks `inference_lab` as a regular Python package. It can be empty;
-ours contains only a description. Add functionality in separate modules as the
-project grows.
+I am building `inference_runtime` into an importable inference runtime. It currently
+provides loading and experiment helpers; Stage 3 will add shared generation and
+sampling, followed by KV-cache management, batching, and scheduling. The runtime
+will be usable by the later service without importing a stage script, while still
+depending on PyTorch and Transformers for model computation. Completed early-stage
+scripts retain their original implementations as learning references.
 
 ## Working approach
 

@@ -1,7 +1,6 @@
 # Stage 2 — Manual autoregressive decoding
 
-**Status:** Implemented and validated on Modal. I am reviewing the result before
-beginning Stage 3.
+**Status:** Complete. I validated the generation loop and am beginning Stage 3.
 
 ## Goal
 
@@ -18,7 +17,7 @@ processed together?
 
 ### 1. Reuse the Stage 1 loading setup
 
-- [x] Copy pinned tokenizer/model loading into `inference_lab/model.py`.
+- [x] Copy pinned tokenizer/model loading into `inference_runtime/model.py`.
 - [x] Preserve Stage 1's original loading and forward-pass code.
 - [x] Use the shared loader in the Stage 2 experiment.
 - [x] Retain the model revision, T4, float32, eager attention, and Volume cache
@@ -68,7 +67,7 @@ processed together?
 
 ## Hypothesis and method
 
-I expect the first selected token to match Stage 1 under the same configuration.
+I expected the first selected token to match Stage 1 under the same configuration.
 Each later step conditions on the prompt plus all previously selected tokens.
 Without a KV cache, the model recomputes attention and other layer outputs for
 that entire prefix at every step.
@@ -165,8 +164,9 @@ prompt IDs
   -> stop on EOS or token budget; otherwise repeat
 ```
 
-## Completion criteria
+## Next stage
 
-Stage 2 is complete when the manual loop generates a continuation on Modal,
-records a canonical artifact, and validates prefix growth, first-token agreement,
-repeatability, and stopping conditions.
+In [Stage 3](../03_sampling/README.md), I will keep the forward-pass setup and
+uncached generation behavior, then replace greedy selection with configurable
+sampling. The original Stage 2 script remains a reference. A copy of its reusable
+loop will become the generation component in `inference_runtime/`.

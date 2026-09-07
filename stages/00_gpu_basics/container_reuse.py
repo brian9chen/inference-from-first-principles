@@ -9,7 +9,7 @@ torch_image = (
     modal.Image.debian_slim(python_version="3.12")
     .pip_install("numpy==2.5.2")
     .pip_install("torch==2.12.1", index_url="https://download.pytorch.org/whl/cu126")
-    .add_local_python_source("inference_lab")
+    .add_local_python_source("inference_runtime")
 )
 
 app = modal.App("stage-00-container-reuse")
@@ -75,7 +75,7 @@ class ContainerReuseProbe:
 
 @app.local_entrypoint()
 def main(reuse_calls: int = 3, output: str = "") -> None:
-    from inference_lab.experiments import save_result
+    from inference_runtime.experiments import save_result
 
     if reuse_calls < 2:
         raise ValueError("reuse-calls must be >= 2")

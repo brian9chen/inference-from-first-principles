@@ -7,7 +7,7 @@ from time import perf_counter
 import modal
 
 base_image = modal.Image.debian_slim(python_version="3.12").add_local_python_source(
-    "inference_lab"
+    "inference_runtime"
 )
 
 app = modal.App("stage-00-volume")
@@ -62,7 +62,7 @@ class VolumePersistenceProbe:
 def main(output: str = "") -> None:
     import uuid
 
-    from inference_lab.experiments import save_result
+    from inference_runtime.experiments import save_result
 
     marker = uuid.uuid4().hex
     probe = VolumePersistenceProbe()

@@ -134,10 +134,20 @@ through the same API where practical.
 
 ## What is shared across stages
 
-This is one evolving codebase rather than a collection of unrelated demos.
-Reusable behavior moves into `inference_lab/`; stage directories contain focused
-experiments that exercise it. Benchmark workloads and result summaries live
-under `benchmarks/` so later stages can repeat earlier measurements.
+I am building `inference_runtime/` into the importable educational inference runtime.
+It currently contains model loading and experiment helpers. Stage 3 will add a
+shared generation loop and sampler; later stages will add request state, KV-cache
+management, batching, and scheduling.
+
+The runtime must be usable without importing anything from `stages/`. Stage
+experiments and the later API will call the package; Modal entrypoints configure
+deployment and resources around it. PyTorch and Transformers remain dependencies
+for tensor operations and model forward-pass math.
+
+Completed early-stage scripts retain their original implementations as learning
+references. Reusable copies become package components that later experiments
+exercise and test. Workloads and canonical measurements live under `benchmarks/`
+so those experiments can repeat earlier comparisons.
 
 The important shared boundaries are:
 

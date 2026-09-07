@@ -2,8 +2,8 @@
 
 The project uses one shared implementation that becomes more capable at each
 stage. Stage directories hold small executable experiments and short write-ups,
-not 20 independent projects. Stages 0–1 are complete, and Stage 2 is implemented
-and validated. I am reviewing its results; later stages are planned.
+not 20 independent projects. Stages 0–2 are complete. I am planning Stage 3;
+later stages are planned.
 
 See [Big Picture](big-picture.md) for the end-to-end architecture, the roles of
 the educational runtime and vLLM, and the intended capstone. This roadmap is the
@@ -33,7 +33,7 @@ dimensions of the tensors and how logits map to vocabulary tokens.
 
 ### 02 — Manual autoregressive decoding
 
-**Status:** Implemented and validated; reviewing results.
+**Status:** Complete.
 
 Directory: `stages/02_autoregressive_decode/`
 
@@ -45,12 +45,19 @@ prefix at each step. See the
 
 ### 03 — Sampling
 
+**Status:** Planned; implementation next.
+
 Directory: `stages/03_sampling/`
 
 Implement greedy, temperature, top-k, and top-p selection. Show how sampling
 changes the choice from a given set of logits. The transformer forward-pass
 algorithm stays the same, although a different selected token changes the input
 to subsequent forward passes.
+
+I will build shared generation and sampling components in `inference_runtime/`, while
+preserving the Stage 1 and Stage 2 scripts. See the
+[Stage 3 plan](../stages/03_sampling/README.md) for fixed-logit comparisons,
+controlled sampling tests, and seeded generation experiments.
 
 ### 04 — KV cache
 
@@ -219,7 +226,7 @@ understand; it does not need to be production-grade.
 
 ## Shared implementation
 
-These modules will be added under `inference_lab/` as their responsibilities
+These modules will be added under `inference_runtime/` as their responsibilities
 emerge:
 
 | Module | Responsibility |

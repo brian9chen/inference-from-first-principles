@@ -5,7 +5,7 @@ from time import perf_counter
 
 import modal
 
-from inference_lab.model import MODEL_ID, MODEL_REVISION
+from inference_runtime.model import MODEL_ID, MODEL_REVISION
 
 DEFAULT_PROMPT = "Poker is a game of"
 GPU = "T4"
@@ -25,7 +25,7 @@ base_image = (
     )
     .env({"HF_HUB_CACHE": CACHE_PATH})
 )
-image = base_image.add_local_python_source("inference_lab")
+image = base_image.add_local_python_source("inference_runtime")
 app = modal.App("stage-02-autoregressive-decode")
 cache_volume = modal.Volume.from_name(VOLUME_NAME, create_if_missing=True)
 
@@ -153,8 +153,8 @@ def generate(prompt: str = DEFAULT_PROMPT, max_new_tokens: int = 16):
 
     import torch
 
-    from inference_lab.experiments import gpu_info
-    from inference_lab.model import load_model
+    from inference_runtime.experiments import gpu_info
+    from inference_runtime.model import load_model
 
     if not prompt.strip() or max_new_tokens < 0:
         raise ValueError("Provide a nonempty prompt and a nonnegative token budget.")
@@ -312,7 +312,7 @@ def compare_stage1(result, baseline):
 
 @app.local_entrypoint()
 def main(prompt: str = DEFAULT_PROMPT, max_new_tokens: int = 16, output: str = ""):
-    from inference_lab.experiments import save_result
+    from inference_runtime.experiments import save_result
 
     if not prompt.strip() or max_new_tokens < 0:
         raise ValueError("Provide a nonempty prompt and a nonnegative token budget.")

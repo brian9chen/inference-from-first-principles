@@ -79,11 +79,11 @@ prompt position determine one next token?
 | File | Responsibility |
 | --- | --- |
 | `stages/01_forward_pass/forward_pass.py` | Modal setup, one forward-pass experiment, output, and result recording |
-| `inference_lab/experiments.py` | Existing environment, timing, Git metadata, and result helpers |
+| `inference_runtime/experiments.py` | Existing environment, timing, Git metadata, and result helpers |
 | `benchmarks/results/stage01-forward-pass.json` | Generated canonical result |
 
 I keep the original loading and forward-pass code in this script as a completed
-experiment. Stage 2 will use the shared loader in `inference_lab/model.py`.
+experiment. Stage 2 will use the shared loader in `inference_runtime/model.py`.
 
 ## Method and reproduction
 

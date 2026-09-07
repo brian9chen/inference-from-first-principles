@@ -31,7 +31,7 @@ options, and result artifact remain easy to identify.
 | `benchmark_matmul.py` | Compare CPU and GPU matrix multiplication |
 | `container_reuse.py` | Observe state across repeated remote calls |
 | `volume_persistence.py` | Compare container-local storage with a Volume |
-| `inference_lab/experiments.py` | Share timing, environment inspection, and result writing |
+| `inference_runtime/experiments.py` | Share timing, environment inspection, and result writing |
 
 Each remote Image explicitly includes the shared package with
 [`add_local_python_source`](https://modal.com/docs/guide/images#add-local-python-code-with-add-local-python-source).

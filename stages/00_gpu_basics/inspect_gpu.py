@@ -6,7 +6,7 @@ torch_image = (
     modal.Image.debian_slim(python_version="3.12")
     .pip_install("numpy==2.5.2")
     .pip_install("torch==2.12.1", index_url="https://download.pytorch.org/whl/cu126")
-    .add_local_python_source("inference_lab")
+    .add_local_python_source("inference_runtime")
 )
 
 app = modal.App("stage-00-gpu-inspection")
@@ -16,7 +16,7 @@ app = modal.App("stage-00-gpu-inspection")
 def inspect_gpu() -> dict[str, object]:
     import torch
 
-    from inference_lab.experiments import gpu_info
+    from inference_runtime.experiments import gpu_info
 
     info = gpu_info()
     a = torch.tensor([[1.0, 2.0], [3.0, 4.0]], device="cuda")
@@ -29,7 +29,7 @@ def inspect_gpu() -> dict[str, object]:
 
 @app.local_entrypoint()
 def main(output: str = "") -> None:
-    from inference_lab.experiments import save_result
+    from inference_runtime.experiments import save_result
 
     result = inspect_gpu.remote()
     print(json.dumps(result, indent=2))

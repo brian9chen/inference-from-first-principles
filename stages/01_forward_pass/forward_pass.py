@@ -24,7 +24,7 @@ image = (
         "safetensors==0.6.2",
     )
     .env({"HF_HUB_CACHE": CACHE_PATH})
-    .add_local_python_source("inference_lab")
+    .add_local_python_source("inference_runtime")
 )
 app = modal.App("stage-01-forward-pass")
 # Persistent files include weights, tokenizer, and configuration.
@@ -46,7 +46,7 @@ def forward_pass(prompt: str = DEFAULT_PROMPT) -> dict[str, object]:
     import torch
     from transformers import AutoModelForCausalLM, AutoTokenizer
 
-    from inference_lab.experiments import gpu_info
+    from inference_runtime.experiments import gpu_info
 
     if not prompt.strip():
         raise ValueError("The prompt must contain non-whitespace text.")
@@ -218,7 +218,7 @@ def forward_pass(prompt: str = DEFAULT_PROMPT) -> dict[str, object]:
 
 @app.local_entrypoint()
 def main(prompt: str = DEFAULT_PROMPT, output: str = "") -> None:
-    from inference_lab.experiments import save_result
+    from inference_runtime.experiments import save_result
 
     if not prompt.strip():
         raise ValueError("The prompt must contain non-whitespace text.")

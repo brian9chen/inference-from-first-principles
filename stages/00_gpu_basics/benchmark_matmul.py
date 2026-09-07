@@ -8,7 +8,7 @@ torch_image = (
     modal.Image.debian_slim(python_version="3.12")
     .pip_install("numpy==2.5.2")
     .pip_install("torch==2.12.1", index_url="https://download.pytorch.org/whl/cu126")
-    .add_local_python_source("inference_lab")
+    .add_local_python_source("inference_runtime")
 )
 
 app = modal.App("stage-00-matmul")
@@ -25,7 +25,7 @@ app = modal.App("stage-00-matmul")
 def benchmark_matmul(warmup: int = 3, repeats: int = 10) -> dict[str, object]:
     import torch
 
-    from inference_lab.experiments import gpu_info, measure_ms
+    from inference_runtime.experiments import gpu_info, measure_ms
 
     if warmup < 0 or repeats < 1:
         raise ValueError("warmup must be >= 0 and repeats must be >= 1")
@@ -140,7 +140,7 @@ def print_results(result: dict[str, object]) -> None:
 
 @app.local_entrypoint()
 def main(warmup: int = 3, repeats: int = 10, output: str = "") -> None:
-    from inference_lab.experiments import save_result
+    from inference_runtime.experiments import save_result
 
     if warmup < 0 or repeats < 1:
         raise ValueError("warmup must be >= 0 and repeats must be >= 1")
