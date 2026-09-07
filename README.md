@@ -9,7 +9,7 @@ I will begin with a single forward pass and manual token generation to learn abo
 I plan on running all GPU experiments on Modal. Each stage extends a shared Python
 implementation and I will record the main benchmarks/takeaways from each experiment and how it might apply to a real inference system.
 
-**Status:** Stages 0–1 complete; planning Stage 2
+**Status:** Stages 0–1 complete; Stage 2 implemented and validated, reviewing results
 
 ## Roadmap
 
@@ -41,8 +41,8 @@ python -m pip install -e '.[dev]'
 ```
 
 The editable install (`-e`) lets scripts import `inference_lab` while its source
-changes. The `dev` extra installs Ruff for linting and formatting, plus pytest for
-future tests. The environment must be reactivated in each new terminal session.
+changes. The `dev` extra installs Ruff for linting and formatting, plus pytest.
+The environment must be reactivated in each new terminal session.
 
 Verify the local setup:
 
@@ -53,8 +53,9 @@ python -m ruff check .
 python -m ruff format --check .
 ```
 
-These checks run locally. There are no implementation tests yet; add tests
-alongside the first reusable behavior and then run `python -m pytest`.
+These checks run locally. Run `python -m pytest` for tests; tensor tests skip when
+PyTorch is not installed locally. The [test instructions](tests/README.md) include
+a Modal CPU command that executes the full suite in the pinned remote runtime.
 
 Before running the first actual Modal experiment, authenticate interactively:
 
@@ -83,7 +84,7 @@ The completed [Stage 0 notes](stages/00_gpu_basics/README.md) define the timing
 boundaries, link all four result artifacts, and summarize the conclusions.
 [Stage 1](stages/01_forward_pass/README.md) records one direct language-model
 forward pass and greedy next-token selection. The
-[Stage 2 plan](stages/02_autoregressive_decode/README.md) extends this into manual
+[Stage 2 experiment](stages/02_autoregressive_decode/README.md) extends this into manual
 autoregressive generation without KV caching.
 
 ### Local environment versus GPU environment
@@ -119,7 +120,8 @@ inference-from-first-principles/
 │   │   ├── README.md
 │   │   └── forward_pass.py
 │   └── 02_autoregressive_decode/
-│       └── README.md
+│       ├── README.md
+│       └── generate.py
 ├── benchmarks/
 │   ├── workloads/
 │   │   └── README.md
@@ -129,9 +131,12 @@ inference-from-first-principles/
 │       ├── stage00-matmul.json
 │       ├── stage00-container-reuse.json
 │       ├── stage00-volume.json
-│       └── stage01-forward-pass.json
+│       ├── stage01-forward-pass.json
+│       └── stage02-autoregressive-decode.json
 ├── tests/
-│   └── README.md
+│   ├── README.md
+│   ├── test_autoregressive_decode.py
+│   └── run_remote.py
 └── docs/
     ├── big-picture.md
     └── roadmap.md

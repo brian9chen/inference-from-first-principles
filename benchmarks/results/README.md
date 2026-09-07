@@ -19,6 +19,10 @@ Stage 1 records:
 
 - [`stage01-forward-pass.json`](stage01-forward-pass.json)
 
+Stage 2 records:
+
+- [`stage02-autoregressive-decode.json`](stage02-autoregressive-decode.json)
+
 For each experiment, the record should capture the reproduction command, code
 revision, model revision, resolved dependencies, GPU type and count, dtype,
 workload, warmup policy, repetition count, and timing boundaries. It should also

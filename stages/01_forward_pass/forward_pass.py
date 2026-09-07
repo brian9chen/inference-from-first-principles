@@ -113,7 +113,7 @@ def forward_pass(prompt: str = DEFAULT_PROMPT) -> dict[str, object]:
     }
 
     runs = []
-    with torch.inference_mode():
+    with torch.inference_mode(): # Python context manager where a setting is active
         # repeat twice to make sure result is deterministic
         for run in range(2):
             torch.cuda.synchronize()
@@ -131,6 +131,8 @@ def forward_pass(prompt: str = DEFAULT_PROMPT) -> dict[str, object]:
                 raise RuntimeError("Next-token logits contain non-finite values.")
             # Softmax is unnecessary for greedy selection.
             next_token_id = next_token_logits.argmax().item()
+            
+            # decode the next token
             next_token = tokenizer.decode(
                 [next_token_id], clean_up_tokenization_spaces=False
             )
