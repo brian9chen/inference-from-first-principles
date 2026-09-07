@@ -3,6 +3,15 @@ from types import SimpleNamespace
 import pytest
 
 
+def pytest_addoption(parser):
+    parser.addoption("--sampling-device", default="cpu")
+
+
+@pytest.fixture
+def sampling_device(request):
+    return request.config.getoption("--sampling-device")
+
+
 @pytest.fixture
 def torch():
     return pytest.importorskip(

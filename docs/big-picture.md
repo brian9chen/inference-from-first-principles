@@ -135,8 +135,8 @@ through the same API where practical.
 ## What is shared across stages
 
 I am building `inference_runtime/` into the importable educational inference runtime.
-It currently contains model loading and experiment helpers. Stage 3 will add a
-shared generation loop and sampler; later stages will add request state, KV-cache
+It currently contains model loading, experiment helpers, a shared generation loop,
+and a sampler; later stages will add request state, KV-cache
 management, batching, and scheduling.
 
 The runtime must be usable without importing anything from `stages/`. Stage

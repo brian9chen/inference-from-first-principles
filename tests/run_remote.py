@@ -26,6 +26,22 @@ def run_tests() -> int:
 
 
 @app.local_entrypoint()
-def main():
-    if run_tests.remote() != 0:
-        raise RuntimeError("Remote CPU tests failed.")
+def main(gpu: bool = False):
+    result = run_sampling_gpu_tests.remote() if gpu else run_tests.remote()
+    if result != 0:
+        raise RuntimeError("Remote tests failed.")
+
+
+@app.function(image=test_image, gpu="T4", cpu=2, memory=4096, timeout=180)
+def run_sampling_gpu_tests() -> int:
+    import pytest
+
+    return int(
+        pytest.main(
+            [
+                "-q",
+                "/workspace/tests/test_sampling.py",
+                "--sampling-device=cuda:0",
+            ]
+        )
+    )

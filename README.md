@@ -9,7 +9,7 @@ I will begin with a single forward pass and manual token generation to learn abo
 I plan on running all GPU experiments on Modal. Each stage extends a shared Python
 implementation and I will record the main benchmarks/takeaways from each experiment and how it might apply to a real inference system.
 
-**Status:** Stages 0–2 complete; Stage 3 shared generation implemented, sampler next
+**Status:** Stages 0–2 complete; Stage 3 sampler implemented, fixed-logit experiments next
 
 ## Roadmap
 
@@ -111,7 +111,8 @@ inference-from-first-principles/
 │   ├── __init__.py
 │   ├── experiments.py
 │   ├── generation.py
-│   └── model.py
+│   ├── model.py
+│   └── sampling.py
 ├── stages/
 │   ├── 00_gpu_basics/
 │   │   ├── README.md
@@ -145,6 +146,7 @@ inference-from-first-principles/
 │   ├── conftest.py
 │   ├── test_autoregressive_decode.py
 │   ├── test_generation.py
+│   ├── test_sampling.py
 │   └── run_remote.py
 └── docs/
     ├── big-picture.md
@@ -163,8 +165,8 @@ inference-from-first-principles/
   runtime and infrastructure design decisions.
 
 I am building `inference_runtime` into an importable inference runtime. It currently
-provides loading, shared generation, and experiment helpers; Stage 3 will add
-sampling, followed by KV-cache management, batching, and scheduling. The runtime
+provides loading, shared generation, sampling, and experiment helpers. I plan to
+add KV-cache management, batching, and scheduling in later stages. The runtime
 will be usable by the later service without importing a stage script, while still
 depending on PyTorch and Transformers for model computation. Completed early-stage
 scripts retain their original implementations as learning references.

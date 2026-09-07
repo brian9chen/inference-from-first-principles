@@ -45,7 +45,7 @@ prefix at each step. See the
 
 ### 03 — Sampling
 
-**Status:** In progress; shared generation implemented, sampler next.
+**Status:** In progress; sampler implemented, fixed-logit experiments next.
 
 Directory: `stages/03_sampling/`
 
@@ -54,8 +54,8 @@ changes the choice from a given set of logits. The transformer forward-pass
 algorithm stays the same, although a different selected token changes the input
 to subsequent forward passes.
 
-I have added shared generation in `inference_runtime/`, preserving the Stage 1 and
-Stage 2 scripts. Sampling is next. See the
+I have added shared generation and sampling in `inference_runtime/`, preserving
+the Stage 1 and Stage 2 scripts. Fixed-logit experiments are next. See the
 [Stage 3 plan](../stages/03_sampling/README.md) for fixed-logit comparisons,
 controlled sampling tests, and seeded generation experiments.
 

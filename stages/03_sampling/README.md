@@ -1,6 +1,6 @@
 # Stage 3 — Sampling
 
-**Status:** In progress. Shared generation is implemented; the sampler is next.
+**Status:** In progress. Shared generation and the sampler are implemented; fixed-logit experiments are next.
 
 ## Goal
 
@@ -42,18 +42,18 @@ selection changes the next input; the model's layer computation is unchanged.
 
 ### 2. Implement the sampler
 
-- [ ] Add `inference_runtime/sampling.py` with an explicit greedy mode and sampled mode.
-- [ ] Convert final-position logits to probabilities with stable softmax.
-- [ ] Apply temperature, then optional top-k, then optional top-p, in that order.
-- [ ] For top-p, compute cumulative probabilities after earlier filtering; retain
+- [x] Add `inference_runtime/sampling.py` with an explicit greedy mode and sampled mode.
+- [x] Convert final-position logits to probabilities with stable softmax.
+- [x] Apply temperature, then optional top-k, then optional top-p, in that order.
+- [x] For top-p, compute cumulative probabilities after earlier filtering; retain
   the token that reaches the threshold and always keep at least one candidate.
-- [ ] Mask excluded logits with negative infinity and renormalize the surviving
+- [x] Mask excluded logits with negative infinity and renormalize the surviving
   candidates before sampling with `torch.multinomial`.
-- [ ] Validate finite positive temperature, optional integer k within vocabulary
+- [x] Validate finite positive temperature, optional integer k within vocabulary
   bounds, and `0 < p <= 1`; use explicit greedy mode rather than dividing by zero.
-- [ ] Define deterministic handling of score ties and reject invalid distributions
+- [x] Define deterministic handling of score ties and reject invalid distributions
   such as NaNs or no remaining finite candidates.
-- [ ] Use an explicit random generator on the logits' device, seeded once per
+- [x] Use an explicit random generator on the logits' device, seeded once per
   sequence. Reset it between repeated runs, not between generated tokens.
 
 ### 3. Inspect selection on fixed logits
@@ -80,19 +80,19 @@ selection changes the next input; the model's layer computation is unchanged.
 
 ### 5. Validate and record
 
-- [ ] Test probability normalization, stable softmax for large finite scores,
+- [x] Test probability normalization, stable softmax for large finite scores,
   filtering boundaries, ties, and invalid settings on controlled logits.
-- [ ] Check that top-k with k=1 agrees with greedy selection for a unique maximum;
+- [x] Check that top-k with k=1 agrees with greedy selection for a unique maximum;
   k equal to vocabulary size and p=1 leave their respective filters inactive.
-- [ ] Check top-p threshold inclusion, retention of at least one token, and that
+- [x] Check top-p threshold inclusion, retention of at least one token, and that
   excluded tokens have zero probability.
-- [ ] Check seeded repeatability and sample frequencies against a known small
+- [x] Check seeded repeatability and sample frequencies against a known small
   distribution with a fixed seed, enough draws, and a statistical tolerance.
 - [x] Preserve the existing EOS, zero-budget, length, and context-boundary tests
   for the new shared generation loop; keep testing the Stage 2 reference too.
 - [x] Extend the CPU test runner to execute shared generation tests, including
   custom selection and a seeded sampling callback.
-- [ ] Add the sampler's probability and filtering tests to the CPU suite.
+- [x] Add the sampler's probability and filtering tests to the CPU suite.
 - [ ] Automatically write `benchmarks/results/stage03-sampling.json`, including
   model/environment metadata, settings, seeds, generated IDs, stop reasons, checks,
   and fixed-logit diagnostics. Keep large sweeps under `benchmarks/results/raw/`.
@@ -112,7 +112,7 @@ selection changes the next input; the model's layer computation is unchanged.
 | File | Responsibility |
 | --- | --- |
 | `inference_runtime/model.py` | Existing pinned model and tokenizer loading |
-| `inference_runtime/sampling.py` (planned) | Selection settings, filtering, probabilities, and token selection |
+| `inference_runtime/sampling.py` | Selection settings, filtering, probabilities, and token selection |
 | `inference_runtime/generation.py` | Shared autoregressive loop and stopping behavior |
 | `stages/03_sampling/sample.py` | Modal setup, controlled comparisons, diagnostics, and result recording |
 
@@ -120,13 +120,43 @@ selection changes the next input; the model's layer computation is unchanged.
 accepts a loaded model and one unpadded tokenized prompt. The selector receives
 final-position logits shaped `[1, vocabulary_size]` and returns a token-ID tensor
 shaped `[1, 1]` with the input IDs' dtype and device. Greedy selection is the
-default; a sampling callable will capture its settings and random generator.
+default; `TokenSampler` captures selection settings and a per-sequence generator.
 
 The loop owns prefix and attention-mask growth, EOS stopping, budget/context
 validation, and synchronized forward-pass timing. It returns IDs, stop information,
 and per-step diagnostics. Selection runs outside the forward-pass timing boundary.
 Loading, Modal configuration, text decoding, comparisons, and artifact writing
 remain in the stage executable.
+
+## Sampler API
+
+With a loaded model and tokenized inputs on the same device:
+
+```python
+from inference_runtime.generation import generate_tokens
+from inference_runtime.sampling import SamplingConfig, TokenSampler
+
+config = SamplingConfig(mode="sample", temperature=0.7, top_k=50, top_p=0.9)
+selector = TokenSampler(config, device=str(model.device), seed=42)
+result = generate_tokens(model, inputs, 16, eos_token_ids, select_token=selector)
+```
+
+Create a fresh selector with the same seed for each repeated sequence. The loop
+reuses that selector across tokens. `mode="greedy"` uses argmax without consuming
+random state; temperature and filters are validated but do not affect greedy
+selection. `None` disables either filter. `sampling_probabilities(logits, config)`
+exposes the normalized distribution in vocabulary order without drawing a token.
+
+Equal scores favor lower token IDs. Top-k retains exactly k ranked positions;
+top-p includes the threshold-crossing token and stops at an exact threshold.
+Negative-infinity logits may mark excluded tokens; NaNs, positive infinity, and
+an entirely excluded vocabulary are rejected. The generation loop separately
+requires finite raw model logits.
+
+Probability calculations use float64 on the logits' device to limit overflow
+when applying temperature. Model weights and forward passes remain float32.
+This sampler prioritizes inspectable behavior; its sorting and validation costs
+are outside the recorded forward-pass timings.
 
 ## Run the shared greedy baseline
 
@@ -144,16 +174,19 @@ Arguments include `--prompt`, `--max-new-tokens`, and `--output`.
 The command automatically writes
 [`stage03-sampling.json`](../../benchmarks/results/stage03-sampling.json), labeled
 `shared_generation_greedy_baseline`. This is the initial generation check;
-temperature, top-k, top-p, and fixed-logit diagnostics remain planned.
+sampled continuation comparisons and fixed-logit diagnostics remain planned.
 
 The saved run matches the Stage 2 token IDs and stop reason in both repeats. This
 checks that extracting the loop preserved greedy behavior under the pinned setup.
 
-Run the shared-loop and Stage 2 reference tests with:
+Run the CPU suite, including the sampler, shared loop, and Stage 2 reference:
 
 ```sh
 python -m modal run tests/run_remote.py
 ```
+
+Use `python -m modal run tests/run_remote.py --gpu` to run the sampler suite with
+CUDA logits and generators on a T4. See the [test notes](../../tests/README.md).
 
 ## Hypothesis and method
 
@@ -173,10 +206,11 @@ or coherence, and higher temperature does not guarantee a different token.
 Stage 3 is complete when the shared runtime generates with both greedy and sampled
 selection, the sampler passes controlled probability/filtering tests, greedy
 generation matches Stage 2, and the Modal experiment saves a reproducible result
-artifact. Sampling reproduction commands and interpretation will be added with
-the sampler implementation.
+artifact. Experiment commands and interpretation will be extended with the
+fixed-logit and continuation comparisons.
 
 ## References
 
 - [Hugging Face generation settings](https://huggingface.co/docs/transformers/main/en/main_classes/text_generation)
 - [PyTorch multinomial sampling](https://docs.pytorch.org/docs/stable/generated/torch.multinomial.html)
+- [PyTorch stable sorting](https://docs.pytorch.org/docs/2.12/generated/torch.sort.html)

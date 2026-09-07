@@ -76,6 +76,7 @@ def test_runtime_import_does_not_require_experiment_dependencies():
             sys.executable,
             "-c",
             "import sys; import inference_runtime.generation; "
+            "import inference_runtime.sampling; "
             "assert not {'torch', 'transformers', 'modal'} & sys.modules.keys()",
         ],
         check=True,

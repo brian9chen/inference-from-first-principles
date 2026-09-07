@@ -29,6 +29,7 @@ app = modal.App("stage-03-sampling")
 cache_volume = modal.Volume.from_name(VOLUME_NAME, create_if_missing=True)
 
 
+# Greedy baseline: shared generate_tokens must match Stage 2 before sampling work lands.
 @app.function(
     image=image,
     gpu=GPU,
@@ -49,6 +50,8 @@ def run_baseline(prompt: str = DEFAULT_PROMPT, max_new_tokens: int = 16):
 
     if not prompt.strip() or max_new_tokens < 0:
         raise ValueError("Provide a nonempty prompt and a nonnegative token budget.")
+
+    # Match Stage 2 runtime settings for a fair comparison.
     torch.set_num_threads(2)
     torch.set_float32_matmul_precision("highest")
     torch.manual_seed(0)
@@ -57,16 +60,20 @@ def run_baseline(prompt: str = DEFAULT_PROMPT, max_new_tokens: int = 16):
         device="cuda:0", dtype=DTYPE, cache_dir=CACHE_PATH
     )
     cache_volume.commit()
+
     inputs = tokenizer(prompt, return_tensors="pt", truncation=False)
-    prompt_ids = inputs["input_ids"][0].tolist()
+    prompt_ids = inputs["input_ids"][0].tolist()  # batch row 0; artifact metadata only
     inputs = {name: tensor.to(model.device) for name, tensor in inputs.items()}
+
+    # Normalize EOS to a tuple for early-stop checks inside generate_tokens.
     eos = model.generation_config.eos_token_id
     if eos is None:
         eos = tokenizer.eos_token_id
     eos_ids = () if eos is None else (eos,) if isinstance(eos, int) else tuple(eos)
 
     runs = []
-    for _ in range(2):
+    for _ in range(2):  # repeat to confirm greedy decode is deterministic
+        # select_token is the hook later samplers will replace.
         run = generate_tokens(
             model, inputs, max_new_tokens, eos_ids, select_token=greedy_select
         )
@@ -138,6 +145,7 @@ def run_baseline(prompt: str = DEFAULT_PROMPT, max_new_tokens: int = 16):
 
 
 def compare_stage2(result, baseline):
+    """Check shared greedy generation against the Stage 2 result artifact."""
     if result["input"] != {
         "prompt": baseline["input"]["prompt"],
         "token_ids": baseline["input"]["token_ids"],
@@ -168,7 +176,7 @@ def compare_stage2(result, baseline):
     }
 
 
-@app.local_entrypoint()
+@app.local_entrypoint()  # runs locally; only run_baseline executes on Modal GPU
 def main(prompt: str = DEFAULT_PROMPT, max_new_tokens: int = 16, output: str = ""):
     from inference_runtime.experiments import save_result
 
@@ -178,6 +186,7 @@ def main(prompt: str = DEFAULT_PROMPT, max_new_tokens: int = 16, output: str = "
     baseline_path = Path(__file__).resolve().parents[2] / (
         "benchmarks/results/stage02-autoregressive-decode.json"
     )
+    # Regression gate: refactored loop must reproduce Stage 2 token IDs.
     result["stage2_comparison"] = (
         compare_stage2(result, json.loads(baseline_path.read_text())["data"])
         if baseline_path.exists()
