@@ -1,5 +1,5 @@
 {
-  "schema_version": 1,
+  "schema_version": 3,
   "experiment": "stage00_container_reuse",
   "recorded_at": "2026-09-05T20:25:23.541938+00:00",
   "git": {
@@ -9,15 +9,8 @@
   "command": "python -m modal run stages/00_gpu_basics/container_reuse.py --reuse-calls 3",
   "data": {
     "same_container": true,
-    "container_ids": [
-      "dbbe70cc8379416e849a8578f47ba073"
-    ],
     "calls": [
       {
-        "container_id": "dbbe70cc8379416e849a8578f47ba073",
-        "hostname": "modal",
-        "pid": 2,
-        "invocation": 1,
         "torch_was_imported": false,
         "cuda_was_initialized": false,
         "inputs_were_cached": false,
@@ -25,15 +18,10 @@
         "setup_ms": 597.2073780000003,
         "matmul_ms": 65.73108100000002,
         "remote_total_ms": 4418.357635,
-        "result_sample": -20.082447052001953,
         "call": 1,
         "caller_wall_ms": 7645.665457996074
       },
       {
-        "container_id": "dbbe70cc8379416e849a8578f47ba073",
-        "hostname": "modal",
-        "pid": 2,
-        "invocation": 2,
         "torch_was_imported": true,
         "cuda_was_initialized": true,
         "inputs_were_cached": true,
@@ -41,15 +29,10 @@
         "setup_ms": 0.05069200000029639,
         "matmul_ms": 5.4627730000005315,
         "remote_total_ms": 5.595640000000124,
-        "result_sample": -20.082447052001953,
         "call": 2,
         "caller_wall_ms": 70.43516699923202
       },
       {
-        "container_id": "dbbe70cc8379416e849a8578f47ba073",
-        "hostname": "modal",
-        "pid": 2,
-        "invocation": 3,
         "torch_was_imported": true,
         "cuda_was_initialized": true,
         "inputs_were_cached": true,
@@ -57,10 +40,18 @@
         "setup_ms": 0.04428200000017313,
         "matmul_ms": 5.711728999999721,
         "remote_total_ms": 5.832797000000056,
-        "result_sample": -20.082447052001953,
         "call": 3,
         "caller_wall_ms": 125.34595903707668
       }
     ]
+  },
+  "summary_spec": {
+    "name": "stage00_container_reuse.json",
+    "sha256": "96842cea55c400571745cb9f9b240ed7899c6d1b0881ca61cdbce833806426dc"
+  },
+  "artifact_type": "summary",
+  "raw_result": {
+    "path": "raw/stage00-container-reuse-146d4b4cf35d.json",
+    "sha256": "146d4b4cf35dc5cbe4068110bf0c592211749fd684380ca11daeaee0ac1f396e"
   }
 }

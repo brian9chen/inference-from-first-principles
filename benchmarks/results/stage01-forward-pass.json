@@ -1,5 +1,5 @@
 {
-  "schema_version": 1,
+  "schema_version": 3,
   "experiment": "stage01_forward_pass",
   "recorded_at": "2026-09-06T21:34:41.054794+00:00",
   "git": {
@@ -54,37 +54,7 @@
         253,
         3133,
         282
-      ],
-      "token_pieces": [
-        "P",
-        "oker",
-        "\u0120is",
-        "\u0120a",
-        "\u0120game",
-        "\u0120of"
-      ],
-      "attention_mask": [
-        1,
-        1,
-        1,
-        1,
-        1,
-        1
-      ],
-      "shapes": {
-        "input_ids": [
-          1,
-          6
-        ],
-        "attention_mask": [
-          1,
-          6
-        ]
-      },
-      "devices": {
-        "input_ids": "cuda:0",
-        "attention_mask": "cuda:0"
-      }
+      ]
     },
     "loading": {
       "tokenizer_load_ms": 712.831529999999,
@@ -101,15 +71,8 @@
           6,
           49152
         ],
-        "logits_device": "cuda:0",
-        "logits_dtype": "torch.float32",
-        "next_token_logits_shape": [
-          49152
-        ],
         "next_token_id": 5753,
-        "next_token": " skill",
-        "prompt_plus_next_token": "Poker is a game of skill",
-        "decoded_token_sequence": "Poker is a game of skill"
+        "next_token": " skill"
       },
       {
         "run": 2,
@@ -119,15 +82,8 @@
           6,
           49152
         ],
-        "logits_device": "cuda:0",
-        "logits_dtype": "torch.float32",
-        "next_token_logits_shape": [
-          49152
-        ],
         "next_token_id": 5753,
-        "next_token": " skill",
-        "prompt_plus_next_token": "Poker is a game of skill",
-        "decoded_token_sequence": "Poker is a game of skill"
+        "next_token": " skill"
       }
     ],
     "checks": {
@@ -142,5 +98,14 @@
       "greedy_selection_repeated": true
     },
     "passed": true
+  },
+  "summary_spec": {
+    "name": "stage01_forward_pass.json",
+    "sha256": "ff449a6aa2e312eaaab1044a1886da0d0470128672e5b0d5b9e03b238cbf435b"
+  },
+  "artifact_type": "summary",
+  "raw_result": {
+    "path": "raw/stage01-forward-pass-35cda4266620.json",
+    "sha256": "35cda4266620e6647b6ffe71911e466d0cdc7def37dea627301ad93e6034e6ec"
   }
 }

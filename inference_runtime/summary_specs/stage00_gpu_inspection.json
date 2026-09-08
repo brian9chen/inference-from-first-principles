@@ -1,0 +1,10 @@
+{
+  "gpu_name": true,
+  "vram_total_gib": true,
+  "vram_free_gib": true,
+  "python_version": true,
+  "numpy_version": true,
+  "torch_version": true,
+  "cuda_build_version": true,
+  "cuda_available": true
+}

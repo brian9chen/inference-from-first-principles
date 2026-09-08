@@ -1,0 +1,24 @@
+{
+  "config": true,
+  "environment": true,
+  "model": true,
+  "loading": true,
+  "timing": true,
+  "checks": true,
+  "passed": true,
+  "stage1_comparison": true,
+  "stage2_comparison": true,
+  "input": {
+    "prompt": true,
+    "token_ids": true,
+    "token_pieces": false,
+    "attention_mask": false
+  },
+  "runs": {
+    "run": true,
+    "next_token_id": true,
+    "next_token": true,
+    "logits_shape": true,
+    "forward_ms": true
+  }
+}

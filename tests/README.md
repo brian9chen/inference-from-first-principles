@@ -16,7 +16,15 @@ tests deterministic; no model weights are downloaded.
 Sampler tests cover temperature/filter ordering, normalization, large scores,
 exact top-p thresholds, deterministic ties, exclusion masks, invalid settings,
 generator lifetime, repeatability, and sample frequencies. Sampling frequencies
-use a fixed seed and a tolerance rather than requiring exact counts.
+use a fixed seed and a tolerance rather than requiring exact counts. Experiment
+tests cover controlled settings, bounded probability reports and omitted mass,
+repeat recording, and the Stage 2 greedy regression check.
+
+Result-writer tests cover full-record preservation, checksums, retained run history,
+selected statistics, key outputs, and custom summary paths. Summary tests cover
+nested field selection, list limits, wildcard keys, invalid definitions, and
+rebuilding from raw data after editing a JSON definition. They run locally
+without PyTorch or Modal execution.
 
 Comparison tests need only the development dependencies. Tensor tests use PyTorch
 on CPU and skip when it is not installed locally. To execute the entire suite in

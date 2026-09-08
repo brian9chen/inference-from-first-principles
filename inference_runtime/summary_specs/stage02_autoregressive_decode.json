@@ -1,0 +1,28 @@
+{
+  "config": true,
+  "environment": true,
+  "model": true,
+  "loading": true,
+  "timing": true,
+  "checks": true,
+  "passed": true,
+  "stage1_comparison": true,
+  "stage2_comparison": true,
+  "input": {
+    "prompt": true,
+    "token_ids": true,
+    "token_pieces": false,
+    "attention_mask": false
+  },
+  "runs": {
+    "generated_token_ids": true,
+    "generated_token_count": true,
+    "continuation": true,
+    "stop_reason": true,
+    "checks": true,
+    "passed": true,
+    "steps": false,
+    "all_token_ids": false,
+    "full_text": false
+  }
+}

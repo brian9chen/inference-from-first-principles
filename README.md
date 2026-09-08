@@ -9,7 +9,7 @@ I will begin with a single forward pass and manual token generation to learn abo
 I plan on running all GPU experiments on Modal. Each stage extends a shared Python
 implementation and I will record the main benchmarks/takeaways from each experiment and how it might apply to a real inference system.
 
-**Status:** Stages 0–2 complete; Stage 3 sampler implemented, fixed-logit experiments next
+**Status:** Stages 0–3 complete; Stage 4 KV caching is next
 
 ## Roadmap
 
@@ -86,8 +86,8 @@ boundaries, link all four result artifacts, and summarize the conclusions.
 forward pass and greedy next-token selection. The
 [Stage 2 experiment](stages/02_autoregressive_decode/README.md) extends this into
 manual autoregressive generation without KV caching. The
-[Stage 3 plan](stages/03_sampling/README.md) adds temperature, top-k, and top-p
-sampling to a shared generation loop.
+[Stage 3 experiment](stages/03_sampling/README.md) compares temperature, top-k,
+and top-p on fixed logits and seeded continuations using the shared generation loop.
 
 ### Local environment versus GPU environment
 
@@ -112,6 +112,9 @@ inference-from-first-principles/
 │   ├── experiments.py
 │   ├── generation.py
 │   ├── model.py
+│   ├── results.py
+│   ├── summary.py
+│   ├── summary_specs/
 │   └── sampling.py
 ├── stages/
 │   ├── 00_gpu_basics/
@@ -146,7 +149,10 @@ inference-from-first-principles/
 │   ├── conftest.py
 │   ├── test_autoregressive_decode.py
 │   ├── test_generation.py
+│   ├── test_results.py
+│   ├── test_summary.py
 │   ├── test_sampling.py
+│   ├── test_sampling_experiment.py
 │   └── run_remote.py
 └── docs/
     ├── big-picture.md
@@ -158,8 +164,10 @@ inference-from-first-principles/
 - `stages/`: small experiments that import the shared implementation. Add each
   stage directory when work on that stage begins.
 - `benchmarks/workloads/`: reproducible prompts and workload definitions.
-- `benchmarks/results/`: canonical machine-readable measurements and useful
-  graphs. Large or disposable outputs go under `raw/`, which Git ignores.
+- `benchmarks/results/`: tracked summaries with key measurements and outputs.
+  Every experiment also writes a full record under `raw/`, which Git ignores;
+  each summary links to its raw file.
+  See the [commands and summary rules](benchmarks/results/README.md).
 - `tests/`: tests for shared behavior as it is implemented.
 - `docs/`: the end-to-end plan, detailed roadmap, and later explanations of
   runtime and infrastructure design decisions.

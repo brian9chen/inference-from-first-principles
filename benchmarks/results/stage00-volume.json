@@ -1,5 +1,5 @@
 {
-  "schema_version": 1,
+  "schema_version": 3,
   "experiment": "stage00_volume_persistence",
   "recorded_at": "2026-09-06T04:46:20.100922+00:00",
   "git": {
@@ -9,36 +9,28 @@
   "command": "python -m modal run stages/00_gpu_basics/volume_persistence.py",
   "data": {
     "volume_name": "inference-first-principles-stage00",
-    "marker": "7591dc65db57413391228dee3adf63f2",
     "different_containers": true,
     "local_was_ephemeral": true,
     "volume_persisted": true,
     "passed": true,
     "writer": {
-      "container_id": "ed281ca933b8470ebbdd333a49a48bc1",
-      "hostname": "modal",
-      "pid": 2,
-      "action": "write",
-      "local_path": "/tmp/stage00-marker.txt",
       "local_exists": true,
-      "local_value": "7591dc65db57413391228dee3adf63f2",
-      "volume_path": "/stage00-volume/stage00-marker.txt",
       "volume_exists": true,
-      "volume_value": "7591dc65db57413391228dee3adf63f2",
       "caller_wall_ms": 3291.1738749826327
     },
     "reader": {
-      "container_id": "e380036c790e45369ee75c2cfe12da1b",
-      "hostname": "modal",
-      "pid": 2,
-      "action": "read",
-      "local_path": "/tmp/stage00-marker.txt",
       "local_exists": false,
-      "local_value": null,
-      "volume_path": "/stage00-volume/stage00-marker.txt",
       "volume_exists": true,
-      "volume_value": "7591dc65db57413391228dee3adf63f2",
       "caller_wall_ms": 2735.694916045759
     }
+  },
+  "summary_spec": {
+    "name": "stage00_volume_persistence.json",
+    "sha256": "27fe72d700ee308805fed757a258b6a9e8cd2f11a40b4010563ee66e0c6d1c7a"
+  },
+  "artifact_type": "summary",
+  "raw_result": {
+    "path": "raw/stage00-volume-85c4e5680f96.json",
+    "sha256": "85c4e5680f965b93a5e50cfde78b9ae9e28818edc034d26382622cd9772921ae"
   }
 }

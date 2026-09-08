@@ -2,7 +2,7 @@
 
 The project uses one shared implementation that becomes more capable at each
 stage. Stage directories hold small executable experiments and short write-ups,
-not 20 independent projects. Stages 0–2 are complete. I am implementing Stage 3;
+not 20 independent projects. Stages 0–3 are complete. Stage 4 is next;
 later stages are planned.
 
 See [Big Picture](big-picture.md) for the end-to-end architecture, the roles of
@@ -45,7 +45,7 @@ prefix at each step. See the
 
 ### 03 — Sampling
 
-**Status:** In progress; sampler implemented, fixed-logit experiments next.
+**Status:** Complete.
 
 Directory: `stages/03_sampling/`
 
@@ -54,10 +54,10 @@ changes the choice from a given set of logits. The transformer forward-pass
 algorithm stays the same, although a different selected token changes the input
 to subsequent forward passes.
 
-I have added shared generation and sampling in `inference_runtime/`, preserving
-the Stage 1 and Stage 2 scripts. Fixed-logit experiments are next. See the
-[Stage 3 plan](../stages/03_sampling/README.md) for fixed-logit comparisons,
-controlled sampling tests, and seeded generation experiments.
+I added shared generation and sampling in `inference_runtime/`, preserving the
+Stage 1 and Stage 2 scripts. Fixed-logit comparisons, controlled sampling tests,
+and seeded generation experiments passed. See the
+[Stage 3 notes](../stages/03_sampling/README.md).
 
 ### 04 — KV cache
 

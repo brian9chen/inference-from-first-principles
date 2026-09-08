@@ -1,11 +1,11 @@
 # Stage 3 — Sampling
 
-**Status:** In progress. Shared generation and the sampler are implemented; fixed-logit experiments are next.
+**Status:** Complete. Fixed-logit and seeded generation experiments passed on the pinned T4 setup.
 
 ## Goal
 
 I want to understand how next-token scores become a probability distribution and
-how token selection changes a generated continuation. I will implement sampling
+how token selection changes a generated continuation. I implemented sampling
 directly while retaining the uncached forward-pass setup from Stage 2.
 
 ## Question
@@ -58,24 +58,24 @@ selection changes the next input; the model's layer computation is unchanged.
 
 ### 3. Inspect selection on fixed logits
 
-- [ ] Use small synthetic score vectors to inspect every candidate and probability.
-- [ ] Compute the real prompt's final-position logits once and compare selection
+- [x] Use small synthetic score vectors to inspect every candidate and probability.
+- [x] Compute the real prompt's final-position logits once and compare selection
   settings against that same vector.
-- [ ] Record candidate counts, a bounded list of token probabilities, and any
+- [x] Record candidate counts, a bounded list of token probabilities, and any
   omitted probability mass without dumping the full vocabulary.
-- [ ] Vary one setting at a time before trying combined temperature and filtering.
+- [x] Vary one setting at a time before trying combined temperature and filtering.
 
 ### 4. Compare generated continuations
 
 - [x] Add `stages/03_sampling/sample.py` with prompt, output budget, and result-path
   arguments.
-- [ ] Extend the executable with selection settings and seed arguments.
+- [x] Extend the executable with selection settings and seed arguments.
 - [x] Establish a greedy baseline that matches Stage 2 under identical conditions.
-- [ ] Compare unfiltered sampling, temperature changes, top-k, and top-p using
+- [x] Compare unfiltered sampling, temperature changes, top-k, and top-p using
   short continuations and a small fixed seed list.
-- [ ] Repeat sampled generation with the same seed and configuration to check
+- [x] Repeat sampled generation with the same seed and configuration to check
   repeatability within the pinned environment.
-- [ ] Inspect variation across seeds without requiring every seed to produce a
+- [x] Inspect variation across seeds without requiring every seed to produce a
   different continuation or treating variation as evidence of better quality.
 
 ### 5. Validate and record
@@ -93,18 +93,18 @@ selection changes the next input; the model's layer computation is unchanged.
 - [x] Extend the CPU test runner to execute shared generation tests, including
   custom selection and a seeded sampling callback.
 - [x] Add the sampler's probability and filtering tests to the CPU suite.
-- [ ] Automatically write `benchmarks/results/stage03-sampling.json`, including
+- [x] Automatically write `benchmarks/results/stage03-sampling.json`, including
   model/environment metadata, settings, seeds, generated IDs, stop reasons, checks,
   and fixed-logit diagnostics. Keep large sweeps under `benchmarks/results/raw/`.
-- [ ] Keep sampling/diagnostic work outside the synchronized forward-pass timing
+- [x] Keep sampling/diagnostic work outside the synchronized forward-pass timing
   boundary; define any separately reported sampling or end-to-end timing.
 
 ### 6. Interpret the result
 
-- [ ] Explain the difference between greedy selection and drawing from probabilities.
-- [ ] Distinguish temperature's probability adjustment from candidate filtering.
-- [ ] Explain why later logits can differ once generated prefixes diverge.
-- [ ] Discuss repeatability limits, variability, and the limits of judging quality
+- [x] Explain the difference between greedy selection and drawing from probabilities.
+- [x] Distinguish temperature's probability adjustment from candidate filtering.
+- [x] Explain why later logits can differ once generated prefixes diverge.
+- [x] Discuss repeatability limits, variability, and the limits of judging quality
   from short examples before beginning KV caching in Stage 4.
 
 ## Code boundaries
@@ -158,7 +158,7 @@ when applying temperature. Model weights and forward passes remain float32.
 This sampler prioritizes inspectable behavior; its sorting and validation costs
 are outside the recorded forward-pass timings.
 
-## Run the shared greedy baseline
+## Reproduce the experiments
 
 From the repository root with the local environment activated:
 
@@ -166,48 +166,89 @@ From the repository root with the local environment activated:
 python -m modal run stages/03_sampling/sample.py
 ```
 
-The executable currently runs greedy generation twice on the pinned T4 setup and
-compares token IDs and stop reasons with the Stage 2 artifact. Comparisons skip
-when the prompt, tokenization, configuration, or recorded environment differs.
-Arguments include `--prompt`, `--max-new-tokens`, and `--output`.
+The default suite compares greedy, unfiltered sampling, temperature alone
+(`0.7` and `1.3`), top-k alone (`50`), top-p alone (`0.9`), and combined filtering.
+Sampled configurations use seeds `0,1,42`, each repeated twice with a fresh
+sampler. Greedy uses seed `0` and repeats twice. The prompt and output budget
+match Stage 2; the model revision, T4, float32 forward passes, eager attention,
+and disabled KV cache remain pinned.
 
-The command automatically writes
-[`stage03-sampling.json`](../../benchmarks/results/stage03-sampling.json), labeled
-`shared_generation_greedy_baseline`. This is the initial generation check;
-sampled continuation comparisons and fixed-logit diagnostics remain planned.
+All settings inspect the same real prompt logits, computed once. Two four-token
+synthetic vectors expose every probability, including ties; their top-k setting
+is `2`. Real-prompt reports list at most eight tokens, positive-probability counts,
+entropy, and omitted probability mass. The counts describe nonzero probabilities
+after normalization, including any numerical underflow.
 
-The saved run matches the Stage 2 token IDs and stop reason in both repeats. This
-checks that extracting the loop preserved greedy behavior under the pinned setup.
+Run a custom sampled configuration alongside the greedy reference:
 
-Run the CPU suite, including the sampler, shared loop, and Stage 2 reference:
+```sh
+python -m modal run stages/03_sampling/sample.py --mode sample \
+  --temperature 0.8 --top-k 20 --top-p 0.95 --seeds 0,7 \
+  --output benchmarks/results/raw/stage03-custom.json
+```
+
+`--mode greedy` runs only the baseline and its diagnostics. `--top-k 0` disables
+top-k; `--top-p 1` disables top-p. In suite mode, `--temperature`, `--top-k`, and
+`--top-p` configure their individual cases and the combined case; the additional
+high-temperature case stays at `1.3`. `--prompt` and `--max-new-tokens` customize
+the workload. The Stage 2 comparison skips when its saved prompt, tokenization,
+configuration, or recorded environment differs.
+
+The default command automatically writes
+[`stage03-sampling.json`](../../benchmarks/results/stage03-sampling.json).
+This compact summary contains leading token probabilities, synthetic probability
+vectors, greedy reference IDs, each seed's continuation, repeatability, and
+variation across seeds. `raw_result.path` links to the complete record under the
+Git-ignored `raw/` directory, including sampled IDs, step timings, and detailed
+checks. The summary selects the first repeat from each trial; repeatability is
+recorded separately. JSON field-selection rules and local summary rebuilding are
+documented in the [result instructions](../../benchmarks/results/README.md).
+Identical output across seeds is allowed.
+
+Each recorded `forward_ms` covers only the synchronized model call. Selection,
+validation, input growth, text decoding, diagnostics, loading, and network time
+are excluded. The fixed-logit forward pass occurs before generation and warms the
+model. These runs compare behavior; they do not measure sampling latency,
+throughput, or end-to-end latency, and timings are not a matched Stage 2 benchmark.
+
+Run the CPU suite, including the sampler, experiment reporting, shared loop, and
+Stage 2 reference:
 
 ```sh
 python -m modal run tests/run_remote.py
 ```
 
-Use `python -m modal run tests/run_remote.py --gpu` to run the sampler suite with
+Use `python -m modal run tests/run_remote.py --gpu` for the sampler suite with
 CUDA logits and generators on a T4. See the [test notes](../../tests/README.md).
 
-## Hypothesis and method
+## Interpretation
 
-I expect fixed-logit inspection to show how each setting changes the distribution
-without mixing in changes to the prefix. Lower temperatures should concentrate
-probability; top-k limits candidate count, while top-p adapts that count to the
-distribution. Full continuations will then show how selections alter later inputs.
+The saved greedy run matches Stage 2. Every same-seed repeat reproduced token IDs
+and stop reason. Each sampled configuration varied across the tested seeds, while
+several configurations shared an identical continuation for one seed. Changing a
+setting therefore does not guarantee a different sampled result.
 
-I compare greedy output with the Stage 2 artifact before evaluating sampled
-output. A fixed seed makes a run repeatable only within the tested implementation
-and environment; identical output across devices or library versions is not a
-completion requirement. Sampling adds variability but does not guarantee accuracy
-or coherence, and higher temperature does not guarantee a different token.
+On the fixed prompt logits, lower temperature concentrated probability and higher
+temperature spread it out without changing the highest-scoring token. Top-k
+bounded the candidate count; top-p selected enough candidates to cover its target
+mass. Combining temperature and filtering concentrated the distribution further.
+The synthetic tied scores show deterministic token-ID ordering at filter boundaries.
 
-## Completion criteria
+Greedy always chooses the locally highest-scoring token. Sampling can choose a
+lower-probability candidate. Once that choice changes the prefix, the next forward
+pass receives different input and can produce different logits. Full-continuation
+comparisons mix this feedback with the immediate selection effect; fixed-logit
+comparisons isolate the selection effect.
 
-Stage 3 is complete when the shared runtime generates with both greedy and sampled
-selection, the sampler passes controlled probability/filtering tests, greedy
-generation matches Stage 2, and the Modal experiment saves a reproducible result
-artifact. Experiment commands and interpretation will be extended with the
-fixed-logit and continuation comparisons.
+The high-temperature continuations became less coherent in this run, but lower
+temperature and filtering also produced incorrect or implausible claims. These
+short examples demonstrate behavior, not a quality ranking. Seed repeatability
+applies to the pinned implementation, device, and environment; matching seeds do
+not promise identical output across devices or library versions.
+
+I can now change token selection independently of the generation loop. Stage 4
+will add KV caching and compare cached and uncached generation while holding
+selection settings fixed.
 
 ## References
 

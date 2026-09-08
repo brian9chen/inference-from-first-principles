@@ -14,6 +14,10 @@ test_image = (
         str(ROOT / "stages/02_autoregressive_decode"),
         remote_path="/workspace/stages/02_autoregressive_decode",
     )
+    .add_local_dir(
+        str(ROOT / "stages/03_sampling"),
+        remote_path="/workspace/stages/03_sampling",
+    )
 )
 app = modal.App("inference-runtime-tests")
 

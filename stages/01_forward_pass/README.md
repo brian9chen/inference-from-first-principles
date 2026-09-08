@@ -109,8 +109,10 @@ python -m modal run stages/01_forward_pass/forward_pass.py \
 
 The default run automatically writes
 [`stage01-forward-pass.json`](../../benchmarks/results/stage01-forward-pass.json).
-The artifact includes token IDs and pieces, tensor shapes and devices, model and
-environment metadata, loading timings, and both validation runs.
+The summary includes prompt IDs, selected tokens, logits shapes, loading/forward
+timings, model/environment metadata, and checks. Its `raw_result.path` links to the
+full record under the Git-ignored `raw/` directory, including token pieces, input
+masks, shapes, devices, and both validation runs.
 
 The Hugging Face download cache is mounted at `/hf-cache` on the Modal Volume
 `inference-first-principles-hf-cache`. Downloads are committed to the Volume after

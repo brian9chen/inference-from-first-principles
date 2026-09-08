@@ -103,9 +103,10 @@ python -m modal run stages/02_autoregressive_decode/generate.py
 
 The script automatically writes
 [`stage02-autoregressive-decode.json`](../../benchmarks/results/stage02-autoregressive-decode.json).
-It records both runs, full token IDs, display text, stop reasons, per-step shapes
-and timings, model configuration, environment, and validation checks. Display text
-omits special tokens; the generated IDs preserve EOS.
+The summary records generated IDs, display text, stop reasons, loading timings,
+configuration, environment, and validation checks. Its `raw_result.path`
+links to the full runs, per-step shapes, and timings under the Git-ignored `raw/`
+directory. Display text omits special tokens; generated IDs preserve EOS.
 
 For a different prompt or output budget, use a disposable result path:
 
@@ -119,7 +120,7 @@ First-token agreement is checked against the saved Stage 1 artifact when the
 prompt, configuration, and software match. A different prompt, zero output budget,
 missing artifact, or environment mismatch records an explicit skipped comparison.
 A matching setup with a different selected token fails validation after saving
-the result. Stage 1's original script and result are preserved.
+the result. Stage 1's original script and measurements are preserved.
 
 ## Validation
 

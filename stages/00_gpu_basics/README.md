@@ -94,7 +94,11 @@ networking. It checks the returned GPU output against the CPU result with
 
 The command automatically replaces the canonical result at
 [`benchmarks/results/stage00-matmul.json`](../../benchmarks/results/stage00-matmul.json).
-An alternate output path can preserve an exploratory run:
+It retains timing statistics, speedups, configuration, and correctness checks.
+All Stage 0 experiments also save full records under the Git-ignored `raw/`
+directory; each summary's `raw_result.path` links to its record. Individual timing
+samples and detailed container/Volume evidence remain in those raw files.
+An alternate summary path can preserve an exploratory run:
 
 ```sh
 python -m modal run stages/00_gpu_basics/benchmark_matmul.py \

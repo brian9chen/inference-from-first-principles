@@ -1,0 +1,88 @@
+{
+  "config": true,
+  "environment": true,
+  "model": true,
+  "loading": true,
+  "timing": true,
+  "checks": true,
+  "passed": true,
+  "stage1_comparison": true,
+  "stage2_comparison": true,
+  "input": {
+    "prompt": true,
+    "token_ids": true,
+    "token_pieces": false,
+    "attention_mask": false
+  },
+  "phase": true,
+  "runs": {
+    "generated_token_ids": true,
+    "generated_token_count": true,
+    "continuation": true,
+    "stop_reason": true,
+    "checks": true,
+    "passed": true,
+    "steps": false,
+    "all_token_ids": false,
+    "full_text": false,
+    "$limit": 1
+  },
+  "comparisons": {
+    "name": true,
+    "settings": true,
+    "unique_continuations": true,
+    "passed": true,
+    "trials": {
+      "seed": true,
+      "repeatable": true,
+      "passed": true,
+      "first_difference_from_greedy_step": true,
+      "runs": {
+        "continuation": true,
+        "generated_token_count": true,
+        "stop_reason": true,
+        "passed": true,
+        "steps": false,
+        "generated_token_ids": false,
+        "all_token_ids": false,
+        "checks": false,
+        "$limit": 1
+      }
+    }
+  },
+  "fixed_logits": {
+    "real_prompt": {
+      "*": {
+        "settings": true,
+        "positive_probability_count": true,
+        "entropy_nats": true,
+        "omitted_probability_mass": false,
+        "passed": true,
+        "tokens": {
+          "token_id": true,
+          "text": true,
+          "probability": true,
+          "logit": false,
+          "$limit": 3
+        },
+        "checks": false
+      }
+    },
+    "synthetic": {
+      "name": true,
+      "logits": true,
+      "distributions": {
+        "*": {
+          "settings": true,
+          "tokens": {
+            "token_id": true,
+            "text": false,
+            "probability": true,
+            "logit": false
+          },
+          "passed": true
+        }
+      }
+    }
+  }
+}

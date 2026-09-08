@@ -1,4 +1,3 @@
-import json
 import platform
 import subprocess
 from collections.abc import Callable
@@ -6,6 +5,8 @@ from datetime import UTC, datetime
 from pathlib import Path
 from statistics import median
 from time import perf_counter
+
+from inference_runtime.results import write_result_pair
 
 
 def gpu_info() -> dict[str, object]:
@@ -101,6 +102,4 @@ def save_result(
         if output
         else repo_root / "benchmarks" / "results" / default_name
     )
-    path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(json.dumps(record, indent=2) + "\n")
-    return path
+    return write_result_pair(record, path, repo_root / "benchmarks" / "results" / "raw")

@@ -1,0 +1,17 @@
+{
+  "volume_name": true,
+  "different_containers": true,
+  "local_was_ephemeral": true,
+  "volume_persisted": true,
+  "passed": true,
+  "writer": {
+    "local_exists": true,
+    "volume_exists": true,
+    "caller_wall_ms": true
+  },
+  "reader": {
+    "local_exists": true,
+    "volume_exists": true,
+    "caller_wall_ms": true
+  }
+}

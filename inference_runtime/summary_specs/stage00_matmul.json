@@ -1,0 +1,29 @@
+{
+  "hardware": true,
+  "config": true,
+  "results": {
+    "size": true,
+    "gpu_speedup": true,
+    "transfer_speedup": true,
+    "max_abs_error": true,
+    "correct": true,
+    "cpu": {
+      "median_ms": true,
+      "min_ms": true,
+      "max_ms": true,
+      "samples_ms": false
+    },
+    "gpu": {
+      "median_ms": true,
+      "min_ms": true,
+      "max_ms": true,
+      "samples_ms": false
+    },
+    "gpu_with_transfers": {
+      "median_ms": true,
+      "min_ms": true,
+      "max_ms": true,
+      "samples_ms": false
+    }
+  }
+}

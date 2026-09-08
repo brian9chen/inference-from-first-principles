@@ -16,6 +16,9 @@ dev = ["pytest>=8", "ruff>=0.12"]
 [tool.setuptools.packages.find]
 include = ["inference_runtime*"]
 
+[tool.setuptools.package-data]
+inference_runtime = ["summary_specs/*.json"]
+
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 

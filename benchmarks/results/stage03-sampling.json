@@ -1,14 +1,14 @@
 {
-  "schema_version": 1,
+  "schema_version": 3,
   "experiment": "stage03_sampling",
-  "recorded_at": "2026-09-07T22:03:30.415771+00:00",
+  "recorded_at": "2026-09-07T23:10:05.063620+00:00",
   "git": {
-    "commit": "b539bc2781fa701a22d0b4358e805e62a55e6225",
+    "commit": "5630cde23ba3f3e841bc2e4badb0180e3f4b847d",
     "dirty": true
   },
-  "command": "python -m modal run stages/03_sampling/sample.py --prompt 'Poker is a game of' --max-new-tokens 16",
+  "command": "python -m modal run stages/03_sampling/sample.py --prompt 'Poker is a game of' --max-new-tokens 16 --mode suite --temperature 0.7 --top-k 50 --top-p 0.9 --seeds 0,1,42",
   "data": {
-    "phase": "shared_generation_greedy_baseline",
+    "phase": "sampling_experiments",
     "config": {
       "model_id": "HuggingFaceTB/SmolLM2-135M",
       "model_revision": "93efa2f097d58c2a74874c7e644dbc9b0cee75a2",
@@ -26,7 +26,15 @@
       "eos_token_ids": [
         0
       ],
-      "selection": "greedy"
+      "selection": "suite",
+      "sampling_seeds": [
+        0,
+        1,
+        42
+      ],
+      "repeats_per_seed": 2,
+      "sampling_probability_dtype": "float64",
+      "diagnostic_token_limit": 8
     },
     "environment": {
       "gpu_name": "Tesla T4",
@@ -56,8 +64,8 @@
       ]
     },
     "loading": {
-      "tokenizer_load_ms": 397.2003990000008,
-      "model_load_ms": 934.7954239999989,
+      "tokenizer_load_ms": 387.2045780000004,
+      "model_load_ms": 1044.888447,
       "includes_cache_lookup_and_any_download": true,
       "model_load_includes_cpu_load_and_gpu_transfer": true
     },
@@ -81,258 +89,8 @@
           282,
           5337
         ],
-        "all_token_ids": [
-          64,
-          33940,
-          314,
-          253,
-          3133,
-          282,
-          5753,
-          284,
-          4799,
-          30,
-          657,
-          314,
-          4944,
-          411,
-          827,
-          355,
-          540,
-          6393,
-          28,
-          971,
-          282,
-          5337
-        ],
         "generated_token_count": 16,
         "stop_reason": "max_new_tokens",
-        "steps": [
-          {
-            "step": 1,
-            "input_length": 6,
-            "logits_shape": [
-              1,
-              6,
-              49152
-            ],
-            "logits_device": "cuda:0",
-            "logits_dtype": "torch.float32",
-            "next_token_id": 5753,
-            "sequence_length_after_append": 7,
-            "forward_ms": 540.3247039999997
-          },
-          {
-            "step": 2,
-            "input_length": 7,
-            "logits_shape": [
-              1,
-              7,
-              49152
-            ],
-            "logits_device": "cuda:0",
-            "logits_dtype": "torch.float32",
-            "next_token_id": 284,
-            "sequence_length_after_append": 8,
-            "forward_ms": 41.64485600000134
-          },
-          {
-            "step": 3,
-            "input_length": 8,
-            "logits_shape": [
-              1,
-              8,
-              49152
-            ],
-            "logits_device": "cuda:0",
-            "logits_dtype": "torch.float32",
-            "next_token_id": 4799,
-            "sequence_length_after_append": 9,
-            "forward_ms": 41.20041500000049
-          },
-          {
-            "step": 4,
-            "input_length": 9,
-            "logits_shape": [
-              1,
-              9,
-              49152
-            ],
-            "logits_device": "cuda:0",
-            "logits_dtype": "torch.float32",
-            "next_token_id": 30,
-            "sequence_length_after_append": 10,
-            "forward_ms": 42.4815590000005
-          },
-          {
-            "step": 5,
-            "input_length": 10,
-            "logits_shape": [
-              1,
-              10,
-              49152
-            ],
-            "logits_device": "cuda:0",
-            "logits_dtype": "torch.float32",
-            "next_token_id": 657,
-            "sequence_length_after_append": 11,
-            "forward_ms": 44.14170199999923
-          },
-          {
-            "step": 6,
-            "input_length": 11,
-            "logits_shape": [
-              1,
-              11,
-              49152
-            ],
-            "logits_device": "cuda:0",
-            "logits_dtype": "torch.float32",
-            "next_token_id": 314,
-            "sequence_length_after_append": 12,
-            "forward_ms": 42.175809999999814
-          },
-          {
-            "step": 7,
-            "input_length": 12,
-            "logits_shape": [
-              1,
-              12,
-              49152
-            ],
-            "logits_device": "cuda:0",
-            "logits_dtype": "torch.float32",
-            "next_token_id": 4944,
-            "sequence_length_after_append": 13,
-            "forward_ms": 40.5923210000001
-          },
-          {
-            "step": 8,
-            "input_length": 13,
-            "logits_shape": [
-              1,
-              13,
-              49152
-            ],
-            "logits_device": "cuda:0",
-            "logits_dtype": "torch.float32",
-            "next_token_id": 411,
-            "sequence_length_after_append": 14,
-            "forward_ms": 41.56623499999945
-          },
-          {
-            "step": 9,
-            "input_length": 14,
-            "logits_shape": [
-              1,
-              14,
-              49152
-            ],
-            "logits_device": "cuda:0",
-            "logits_dtype": "torch.float32",
-            "next_token_id": 827,
-            "sequence_length_after_append": 15,
-            "forward_ms": 39.952437000000174
-          },
-          {
-            "step": 10,
-            "input_length": 15,
-            "logits_shape": [
-              1,
-              15,
-              49152
-            ],
-            "logits_device": "cuda:0",
-            "logits_dtype": "torch.float32",
-            "next_token_id": 355,
-            "sequence_length_after_append": 16,
-            "forward_ms": 44.05622700000045
-          },
-          {
-            "step": 11,
-            "input_length": 16,
-            "logits_shape": [
-              1,
-              16,
-              49152
-            ],
-            "logits_device": "cuda:0",
-            "logits_dtype": "torch.float32",
-            "next_token_id": 540,
-            "sequence_length_after_append": 17,
-            "forward_ms": 41.43395599999877
-          },
-          {
-            "step": 12,
-            "input_length": 17,
-            "logits_shape": [
-              1,
-              17,
-              49152
-            ],
-            "logits_device": "cuda:0",
-            "logits_dtype": "torch.float32",
-            "next_token_id": 6393,
-            "sequence_length_after_append": 18,
-            "forward_ms": 43.19183100000146
-          },
-          {
-            "step": 13,
-            "input_length": 18,
-            "logits_shape": [
-              1,
-              18,
-              49152
-            ],
-            "logits_device": "cuda:0",
-            "logits_dtype": "torch.float32",
-            "next_token_id": 28,
-            "sequence_length_after_append": 19,
-            "forward_ms": 43.51227500000121
-          },
-          {
-            "step": 14,
-            "input_length": 19,
-            "logits_shape": [
-              1,
-              19,
-              49152
-            ],
-            "logits_device": "cuda:0",
-            "logits_dtype": "torch.float32",
-            "next_token_id": 971,
-            "sequence_length_after_append": 20,
-            "forward_ms": 42.54224399999984
-          },
-          {
-            "step": 15,
-            "input_length": 20,
-            "logits_shape": [
-              1,
-              20,
-              49152
-            ],
-            "logits_device": "cuda:0",
-            "logits_dtype": "torch.float32",
-            "next_token_id": 282,
-            "sequence_length_after_append": 21,
-            "forward_ms": 43.978109999999404
-          },
-          {
-            "step": 16,
-            "input_length": 21,
-            "logits_shape": [
-              1,
-              21,
-              49152
-            ],
-            "logits_device": "cuda:0",
-            "logits_dtype": "torch.float32",
-            "next_token_id": 5337,
-            "sequence_length_after_append": 22,
-            "forward_ms": 42.26934300000096
-          }
-        ],
         "checks": {
           "prompt_preserved": true,
           "generated_suffix_matches": true,
@@ -342,295 +100,962 @@
           "stop_reason_valid": true
         },
         "passed": true,
-        "continuation": " skill and strategy. It is played by two or more players, each of whom",
-        "full_text": "Poker is a game of skill and strategy. It is played by two or more players, each of whom"
-      },
-      {
-        "generated_token_ids": [
-          5753,
-          284,
-          4799,
-          30,
-          657,
-          314,
-          4944,
-          411,
-          827,
-          355,
-          540,
-          6393,
-          28,
-          971,
-          282,
-          5337
-        ],
-        "all_token_ids": [
-          64,
-          33940,
-          314,
-          253,
-          3133,
-          282,
-          5753,
-          284,
-          4799,
-          30,
-          657,
-          314,
-          4944,
-          411,
-          827,
-          355,
-          540,
-          6393,
-          28,
-          971,
-          282,
-          5337
-        ],
-        "generated_token_count": 16,
-        "stop_reason": "max_new_tokens",
-        "steps": [
-          {
-            "step": 1,
-            "input_length": 6,
-            "logits_shape": [
-              1,
-              6,
-              49152
-            ],
-            "logits_device": "cuda:0",
-            "logits_dtype": "torch.float32",
-            "next_token_id": 5753,
-            "sequence_length_after_append": 7,
-            "forward_ms": 39.87811100000016
-          },
-          {
-            "step": 2,
-            "input_length": 7,
-            "logits_shape": [
-              1,
-              7,
-              49152
-            ],
-            "logits_device": "cuda:0",
-            "logits_dtype": "torch.float32",
-            "next_token_id": 284,
-            "sequence_length_after_append": 8,
-            "forward_ms": 40.294105999999275
-          },
-          {
-            "step": 3,
-            "input_length": 8,
-            "logits_shape": [
-              1,
-              8,
-              49152
-            ],
-            "logits_device": "cuda:0",
-            "logits_dtype": "torch.float32",
-            "next_token_id": 4799,
-            "sequence_length_after_append": 9,
-            "forward_ms": 40.41084500000025
-          },
-          {
-            "step": 4,
-            "input_length": 9,
-            "logits_shape": [
-              1,
-              9,
-              49152
-            ],
-            "logits_device": "cuda:0",
-            "logits_dtype": "torch.float32",
-            "next_token_id": 30,
-            "sequence_length_after_append": 10,
-            "forward_ms": 42.0857459999997
-          },
-          {
-            "step": 5,
-            "input_length": 10,
-            "logits_shape": [
-              1,
-              10,
-              49152
-            ],
-            "logits_device": "cuda:0",
-            "logits_dtype": "torch.float32",
-            "next_token_id": 657,
-            "sequence_length_after_append": 11,
-            "forward_ms": 43.13430499999882
-          },
-          {
-            "step": 6,
-            "input_length": 11,
-            "logits_shape": [
-              1,
-              11,
-              49152
-            ],
-            "logits_device": "cuda:0",
-            "logits_dtype": "torch.float32",
-            "next_token_id": 314,
-            "sequence_length_after_append": 12,
-            "forward_ms": 41.57028000000018
-          },
-          {
-            "step": 7,
-            "input_length": 12,
-            "logits_shape": [
-              1,
-              12,
-              49152
-            ],
-            "logits_device": "cuda:0",
-            "logits_dtype": "torch.float32",
-            "next_token_id": 4944,
-            "sequence_length_after_append": 13,
-            "forward_ms": 40.987098000000444
-          },
-          {
-            "step": 8,
-            "input_length": 13,
-            "logits_shape": [
-              1,
-              13,
-              49152
-            ],
-            "logits_device": "cuda:0",
-            "logits_dtype": "torch.float32",
-            "next_token_id": 411,
-            "sequence_length_after_append": 14,
-            "forward_ms": 40.11718799999997
-          },
-          {
-            "step": 9,
-            "input_length": 14,
-            "logits_shape": [
-              1,
-              14,
-              49152
-            ],
-            "logits_device": "cuda:0",
-            "logits_dtype": "torch.float32",
-            "next_token_id": 827,
-            "sequence_length_after_append": 15,
-            "forward_ms": 40.91379199999956
-          },
-          {
-            "step": 10,
-            "input_length": 15,
-            "logits_shape": [
-              1,
-              15,
-              49152
-            ],
-            "logits_device": "cuda:0",
-            "logits_dtype": "torch.float32",
-            "next_token_id": 355,
-            "sequence_length_after_append": 16,
-            "forward_ms": 40.18094000000083
-          },
-          {
-            "step": 11,
-            "input_length": 16,
-            "logits_shape": [
-              1,
-              16,
-              49152
-            ],
-            "logits_device": "cuda:0",
-            "logits_dtype": "torch.float32",
-            "next_token_id": 540,
-            "sequence_length_after_append": 17,
-            "forward_ms": 41.07609999999973
-          },
-          {
-            "step": 12,
-            "input_length": 17,
-            "logits_shape": [
-              1,
-              17,
-              49152
-            ],
-            "logits_device": "cuda:0",
-            "logits_dtype": "torch.float32",
-            "next_token_id": 6393,
-            "sequence_length_after_append": 18,
-            "forward_ms": 39.975973000000664
-          },
-          {
-            "step": 13,
-            "input_length": 18,
-            "logits_shape": [
-              1,
-              18,
-              49152
-            ],
-            "logits_device": "cuda:0",
-            "logits_dtype": "torch.float32",
-            "next_token_id": 28,
-            "sequence_length_after_append": 19,
-            "forward_ms": 41.07854099999919
-          },
-          {
-            "step": 14,
-            "input_length": 19,
-            "logits_shape": [
-              1,
-              19,
-              49152
-            ],
-            "logits_device": "cuda:0",
-            "logits_dtype": "torch.float32",
-            "next_token_id": 971,
-            "sequence_length_after_append": 20,
-            "forward_ms": 39.5930989999993
-          },
-          {
-            "step": 15,
-            "input_length": 20,
-            "logits_shape": [
-              1,
-              20,
-              49152
-            ],
-            "logits_device": "cuda:0",
-            "logits_dtype": "torch.float32",
-            "next_token_id": 282,
-            "sequence_length_after_append": 21,
-            "forward_ms": 40.31853599999913
-          },
-          {
-            "step": 16,
-            "input_length": 21,
-            "logits_shape": [
-              1,
-              21,
-              49152
-            ],
-            "logits_device": "cuda:0",
-            "logits_dtype": "torch.float32",
-            "next_token_id": 5337,
-            "sequence_length_after_append": 22,
-            "forward_ms": 42.68265700000029
-          }
-        ],
-        "checks": {
-          "prompt_preserved": true,
-          "generated_suffix_matches": true,
-          "prefix_grows_by_one": true,
-          "attention_mask_extended": true,
-          "budget_respected": true,
-          "stop_reason_valid": true
-        },
-        "passed": true,
-        "continuation": " skill and strategy. It is played by two or more players, each of whom",
-        "full_text": "Poker is a game of skill and strategy. It is played by two or more players, each of whom"
+        "continuation": " skill and strategy. It is played by two or more players, each of whom"
       }
     ],
+    "comparisons": [
+      {
+        "settings": {
+          "mode": "sample",
+          "temperature": 1.0,
+          "top_k": null,
+          "top_p": null
+        },
+        "trials": [
+          {
+            "seed": 0,
+            "runs": [
+              {
+                "generated_token_count": 16,
+                "stop_reason": "max_new_tokens",
+                "passed": true,
+                "continuation": " luck and strategy. Hoops is a game of timed success (as described above"
+              }
+            ],
+            "repeatable": true,
+            "passed": true,
+            "first_difference_from_greedy_step": 1
+          },
+          {
+            "seed": 1,
+            "runs": [
+              {
+                "generated_token_count": 16,
+                "stop_reason": "max_new_tokens",
+                "passed": true,
+                "continuation": " rules which is played by the number of players in a Lottery sporting world."
+              }
+            ],
+            "repeatable": true,
+            "passed": true,
+            "first_difference_from_greedy_step": 1
+          },
+          {
+            "seed": 42,
+            "runs": [
+              {
+                "generated_token_count": 16,
+                "stop_reason": "max_new_tokens",
+                "passed": true,
+                "continuation": " strategy. Players have to make decisions and make decisions quickly, and the odds are"
+              }
+            ],
+            "repeatable": true,
+            "passed": true,
+            "first_difference_from_greedy_step": 1
+          }
+        ],
+        "unique_continuations": 3,
+        "passed": true,
+        "name": "unfiltered"
+      },
+      {
+        "settings": {
+          "mode": "sample",
+          "temperature": 0.7,
+          "top_k": null,
+          "top_p": null
+        },
+        "trials": [
+          {
+            "seed": 0,
+            "runs": [
+              {
+                "generated_token_count": 16,
+                "stop_reason": "max_new_tokens",
+                "passed": true,
+                "continuation": " luck and strategy. A person is dealt 10 cards (16 cards"
+              }
+            ],
+            "repeatable": true,
+            "passed": true,
+            "first_difference_from_greedy_step": 1
+          },
+          {
+            "seed": 1,
+            "runs": [
+              {
+                "generated_token_count": 16,
+                "stop_reason": "max_new_tokens",
+                "passed": true,
+                "continuation": " skill and strategy that requires the use of both hands and feet. Players aim to"
+              }
+            ],
+            "repeatable": true,
+            "passed": true,
+            "first_difference_from_greedy_step": 4
+          },
+          {
+            "seed": 42,
+            "runs": [
+              {
+                "generated_token_count": 16,
+                "stop_reason": "max_new_tokens",
+                "passed": true,
+                "continuation": " strategy. Players have to make decisions and make decisions quickly, and the odds are"
+              }
+            ],
+            "repeatable": true,
+            "passed": true,
+            "first_difference_from_greedy_step": 1
+          }
+        ],
+        "unique_continuations": 3,
+        "passed": true,
+        "name": "temperature"
+      },
+      {
+        "settings": {
+          "mode": "sample",
+          "temperature": 1.3,
+          "top_k": null,
+          "top_p": null
+        },
+        "trials": [
+          {
+            "seed": 0,
+            "runs": [
+              {
+                "generated_token_count": 16,
+                "stop_reason": "max_new_tokens",
+                "passed": true,
+                "continuation": " win tallshot or HoL\u3046 particles against statistically and (exchange) old"
+              }
+            ],
+            "repeatable": true,
+            "passed": true,
+            "first_difference_from_greedy_step": 1
+          },
+          {
+            "seed": 1,
+            "runs": [
+              {
+                "generated_token_count": 16,
+                "stop_reason": "max_new_tokens",
+                "passed": true,
+                "continuation": " rules;\\;defects, criteria, et masters are Lottery sporting world."
+              }
+            ],
+            "repeatable": true,
+            "passed": true,
+            "first_difference_from_greedy_step": 1
+          },
+          {
+            "seed": 42,
+            "runs": [
+              {
+                "generated_token_count": 16,
+                "stop_reason": "max_new_tokens",
+                "passed": true,
+                "continuation": " strategyplete calculiliencywork\u2014bound together either with logicexploreanimalaglesdef"
+              }
+            ],
+            "repeatable": true,
+            "passed": true,
+            "first_difference_from_greedy_step": 1
+          }
+        ],
+        "unique_continuations": 3,
+        "passed": true,
+        "name": "temperature_high"
+      },
+      {
+        "settings": {
+          "mode": "sample",
+          "temperature": 1.0,
+          "top_k": 50,
+          "top_p": null
+        },
+        "trials": [
+          {
+            "seed": 0,
+            "runs": [
+              {
+                "generated_token_count": 16,
+                "stop_reason": "max_new_tokens",
+                "passed": true,
+                "continuation": " luck and strategy. Its aim is to find out who plays the best game of"
+              }
+            ],
+            "repeatable": true,
+            "passed": true,
+            "first_difference_from_greedy_step": 1
+          },
+          {
+            "seed": 1,
+            "runs": [
+              {
+                "generated_token_count": 16,
+                "stop_reason": "max_new_tokens",
+                "passed": true,
+                "continuation": " strategy and skill that consists of betting, making plays and winning, and that is"
+              }
+            ],
+            "repeatable": true,
+            "passed": true,
+            "first_difference_from_greedy_step": 1
+          },
+          {
+            "seed": 42,
+            "runs": [
+              {
+                "generated_token_count": 16,
+                "stop_reason": "max_new_tokens",
+                "passed": true,
+                "continuation": " strategy. Players have to make decisions and make decisions quickly, and the odds are"
+              }
+            ],
+            "repeatable": true,
+            "passed": true,
+            "first_difference_from_greedy_step": 1
+          }
+        ],
+        "unique_continuations": 3,
+        "passed": true,
+        "name": "top_k"
+      },
+      {
+        "settings": {
+          "mode": "sample",
+          "temperature": 1.0,
+          "top_k": null,
+          "top_p": 0.9
+        },
+        "trials": [
+          {
+            "seed": 0,
+            "runs": [
+              {
+                "generated_token_count": 16,
+                "stop_reason": "max_new_tokens",
+                "passed": true,
+                "continuation": " luck and strategy. Its aim is to eliminate your opponent and become a star player"
+              }
+            ],
+            "repeatable": true,
+            "passed": true,
+            "first_difference_from_greedy_step": 1
+          },
+          {
+            "seed": 1,
+            "runs": [
+              {
+                "generated_token_count": 16,
+                "stop_reason": "max_new_tokens",
+                "passed": true,
+                "continuation": " rules which is played by the number of players in a table, and that the"
+              }
+            ],
+            "repeatable": true,
+            "passed": true,
+            "first_difference_from_greedy_step": 1
+          },
+          {
+            "seed": 42,
+            "runs": [
+              {
+                "generated_token_count": 16,
+                "stop_reason": "max_new_tokens",
+                "passed": true,
+                "continuation": " strategy. Players have to make decisions and make decisions quickly, and the odds are"
+              }
+            ],
+            "repeatable": true,
+            "passed": true,
+            "first_difference_from_greedy_step": 1
+          }
+        ],
+        "unique_continuations": 3,
+        "passed": true,
+        "name": "top_p"
+      },
+      {
+        "settings": {
+          "mode": "sample",
+          "temperature": 0.7,
+          "top_k": 50,
+          "top_p": 0.9
+        },
+        "trials": [
+          {
+            "seed": 0,
+            "runs": [
+              {
+                "generated_token_count": 16,
+                "stop_reason": "max_new_tokens",
+                "passed": true,
+                "continuation": " luck and strategy. A person is dealt 10 cards (100"
+              }
+            ],
+            "repeatable": true,
+            "passed": true,
+            "first_difference_from_greedy_step": 1
+          },
+          {
+            "seed": 1,
+            "runs": [
+              {
+                "generated_token_count": 16,
+                "stop_reason": "max_new_tokens",
+                "passed": true,
+                "continuation": " skill and strategy. It's all about making smart decisions and learning from your mistakes"
+              }
+            ],
+            "repeatable": true,
+            "passed": true,
+            "first_difference_from_greedy_step": 6
+          },
+          {
+            "seed": 42,
+            "runs": [
+              {
+                "generated_token_count": 16,
+                "stop_reason": "max_new_tokens",
+                "passed": true,
+                "continuation": " strategy. Players have to make decisions and make decisions quickly, and the odds are"
+              }
+            ],
+            "repeatable": true,
+            "passed": true,
+            "first_difference_from_greedy_step": 1
+          }
+        ],
+        "unique_continuations": 3,
+        "passed": true,
+        "name": "combined"
+      }
+    ],
+    "fixed_logits": {
+      "real_prompt": {
+        "greedy": {
+          "settings": {
+            "mode": "greedy",
+            "temperature": 1.0,
+            "top_k": null,
+            "top_p": null
+          },
+          "positive_probability_count": 1,
+          "entropy_nats": -0.0,
+          "tokens": [
+            {
+              "token_id": 5753,
+              "text": " skill",
+              "probability": 1.0
+            },
+            {
+              "token_id": 0,
+              "text": "<|endoftext|>",
+              "probability": 0.0
+            },
+            {
+              "token_id": 1,
+              "text": "<|im_start|>",
+              "probability": 0.0
+            }
+          ],
+          "passed": true
+        },
+        "unfiltered": {
+          "settings": {
+            "mode": "sample",
+            "temperature": 1.0,
+            "top_k": null,
+            "top_p": null
+          },
+          "positive_probability_count": 49152,
+          "entropy_nats": 4.5846275012688125,
+          "tokens": [
+            {
+              "token_id": 5753,
+              "text": " skill",
+              "probability": 0.1995224063595144
+            },
+            {
+              "token_id": 4468,
+              "text": " chance",
+              "probability": 0.15198737888758157
+            },
+            {
+              "token_id": 8905,
+              "text": " luck",
+              "probability": 0.08753424905239608
+            }
+          ],
+          "passed": true
+        },
+        "temperature": {
+          "settings": {
+            "mode": "sample",
+            "temperature": 0.7,
+            "top_k": null,
+            "top_p": null
+          },
+          "positive_probability_count": 49152,
+          "entropy_nats": 2.0453864654031206,
+          "tokens": [
+            {
+              "token_id": 5753,
+              "text": " skill",
+              "probability": 0.3965704658335592
+            },
+            {
+              "token_id": 4468,
+              "text": " chance",
+              "probability": 0.2688350371179177
+            },
+            {
+              "token_id": 8905,
+              "text": " luck",
+              "probability": 0.12222442160374719
+            }
+          ],
+          "passed": true
+        },
+        "temperature_high": {
+          "settings": {
+            "mode": "sample",
+            "temperature": 1.3,
+            "top_k": null,
+            "top_p": null
+          },
+          "positive_probability_count": 49152,
+          "entropy_nats": 6.98690952136148,
+          "tokens": [
+            {
+              "token_id": 5753,
+              "text": " skill",
+              "probability": 0.07449125543741288
+            },
+            {
+              "token_id": 4468,
+              "text": " chance",
+              "probability": 0.060421904504599035
+            },
+            {
+              "token_id": 8905,
+              "text": " luck",
+              "probability": 0.03952428424695612
+            }
+          ],
+          "passed": true
+        },
+        "top_k": {
+          "settings": {
+            "mode": "sample",
+            "temperature": 1.0,
+            "top_k": 50,
+            "top_p": null
+          },
+          "positive_probability_count": 50,
+          "entropy_nats": 2.511688796782169,
+          "tokens": [
+            {
+              "token_id": 5753,
+              "text": " skill",
+              "probability": 0.2834187294731978
+            },
+            {
+              "token_id": 4468,
+              "text": " chance",
+              "probability": 0.21589590164957317
+            },
+            {
+              "token_id": 8905,
+              "text": " luck",
+              "probability": 0.12434115097388174
+            }
+          ],
+          "passed": true
+        },
+        "top_p": {
+          "settings": {
+            "mode": "sample",
+            "temperature": 1.0,
+            "top_k": null,
+            "top_p": 0.9
+          },
+          "positive_probability_count": 598,
+          "entropy_nats": 3.79866819284414,
+          "tokens": [
+            {
+              "token_id": 5753,
+              "text": " skill",
+              "probability": 0.22168881229775367
+            },
+            {
+              "token_id": 4468,
+              "text": " chance",
+              "probability": 0.16887277035504697
+            },
+            {
+              "token_id": 8905,
+              "text": " luck",
+              "probability": 0.09725907010581768
+            }
+          ],
+          "passed": true
+        },
+        "combined": {
+          "settings": {
+            "mode": "sample",
+            "temperature": 0.7,
+            "top_k": 50,
+            "top_p": 0.9
+          },
+          "positive_probability_count": 5,
+          "entropy_nats": 1.3200139631603252,
+          "tokens": [
+            {
+              "token_id": 5753,
+              "text": " skill",
+              "probability": 0.44332469063048474
+            },
+            {
+              "token_id": 4468,
+              "text": " chance",
+              "probability": 0.3005297164790787
+            },
+            {
+              "token_id": 8905,
+              "text": " luck",
+              "probability": 0.13663423921667597
+            }
+          ],
+          "passed": true
+        }
+      },
+      "synthetic": [
+        {
+          "name": "skewed",
+          "logits": [
+            4.0,
+            2.0,
+            1.0,
+            0.0
+          ],
+          "distributions": {
+            "greedy": {
+              "settings": {
+                "mode": "greedy",
+                "temperature": 1.0,
+                "top_k": null,
+                "top_p": null
+              },
+              "tokens": [
+                {
+                  "token_id": 0,
+                  "probability": 1.0
+                },
+                {
+                  "token_id": 1,
+                  "probability": 0.0
+                },
+                {
+                  "token_id": 2,
+                  "probability": 0.0
+                },
+                {
+                  "token_id": 3,
+                  "probability": 0.0
+                }
+              ],
+              "passed": true
+            },
+            "unfiltered": {
+              "settings": {
+                "mode": "sample",
+                "temperature": 1.0,
+                "top_k": null,
+                "top_p": null
+              },
+              "tokens": [
+                {
+                  "token_id": 0,
+                  "probability": 0.8309526605439514
+                },
+                {
+                  "token_id": 1,
+                  "probability": 0.11245721367093256
+                },
+                {
+                  "token_id": 2,
+                  "probability": 0.041370696920960154
+                },
+                {
+                  "token_id": 3,
+                  "probability": 0.01521942886415593
+                }
+              ],
+              "passed": true
+            },
+            "temperature": {
+              "settings": {
+                "mode": "sample",
+                "temperature": 0.7,
+                "top_k": null,
+                "top_p": null
+              },
+              "tokens": [
+                {
+                  "token_id": 0,
+                  "probability": 0.9306698329219437
+                },
+                {
+                  "token_id": 1,
+                  "probability": 0.05345080617806304
+                },
+                {
+                  "token_id": 2,
+                  "probability": 0.012809541099221283
+                },
+                {
+                  "token_id": 3,
+                  "probability": 0.0030698198007719038
+                }
+              ],
+              "passed": true
+            },
+            "temperature_high": {
+              "settings": {
+                "mode": "sample",
+                "temperature": 1.3,
+                "top_k": null,
+                "top_p": null
+              },
+              "tokens": [
+                {
+                  "token_id": 0,
+                  "probability": 0.7351305292855635
+                },
+                {
+                  "token_id": 1,
+                  "probability": 0.1578407377670758
+                },
+                {
+                  "token_id": 2,
+                  "probability": 0.07313856309811327
+                },
+                {
+                  "token_id": 3,
+                  "probability": 0.03389016984924726
+                }
+              ],
+              "passed": true
+            },
+            "top_k": {
+              "settings": {
+                "mode": "sample",
+                "temperature": 1.0,
+                "top_k": 2,
+                "top_p": null
+              },
+              "tokens": [
+                {
+                  "token_id": 0,
+                  "probability": 0.8807970779778823
+                },
+                {
+                  "token_id": 1,
+                  "probability": 0.11920292202211755
+                },
+                {
+                  "token_id": 2,
+                  "probability": 0.0
+                },
+                {
+                  "token_id": 3,
+                  "probability": 0.0
+                }
+              ],
+              "passed": true
+            },
+            "top_p": {
+              "settings": {
+                "mode": "sample",
+                "temperature": 1.0,
+                "top_k": null,
+                "top_p": 0.9
+              },
+              "tokens": [
+                {
+                  "token_id": 0,
+                  "probability": 0.8807970779778823
+                },
+                {
+                  "token_id": 1,
+                  "probability": 0.11920292202211755
+                },
+                {
+                  "token_id": 2,
+                  "probability": 0.0
+                },
+                {
+                  "token_id": 3,
+                  "probability": 0.0
+                }
+              ],
+              "passed": true
+            },
+            "combined": {
+              "settings": {
+                "mode": "sample",
+                "temperature": 0.7,
+                "top_k": 2,
+                "top_p": 0.9
+              },
+              "tokens": [
+                {
+                  "token_id": 0,
+                  "probability": 1.0
+                },
+                {
+                  "token_id": 1,
+                  "probability": 0.0
+                },
+                {
+                  "token_id": 2,
+                  "probability": 0.0
+                },
+                {
+                  "token_id": 3,
+                  "probability": 0.0
+                }
+              ],
+              "passed": true
+            }
+          }
+        },
+        {
+          "name": "ties",
+          "logits": [
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "distributions": {
+            "greedy": {
+              "settings": {
+                "mode": "greedy",
+                "temperature": 1.0,
+                "top_k": null,
+                "top_p": null
+              },
+              "tokens": [
+                {
+                  "token_id": 0,
+                  "probability": 1.0
+                },
+                {
+                  "token_id": 1,
+                  "probability": 0.0
+                },
+                {
+                  "token_id": 2,
+                  "probability": 0.0
+                },
+                {
+                  "token_id": 3,
+                  "probability": 0.0
+                }
+              ],
+              "passed": true
+            },
+            "unfiltered": {
+              "settings": {
+                "mode": "sample",
+                "temperature": 1.0,
+                "top_k": null,
+                "top_p": null
+              },
+              "tokens": [
+                {
+                  "token_id": 0,
+                  "probability": 0.25
+                },
+                {
+                  "token_id": 1,
+                  "probability": 0.25
+                },
+                {
+                  "token_id": 2,
+                  "probability": 0.25
+                },
+                {
+                  "token_id": 3,
+                  "probability": 0.25
+                }
+              ],
+              "passed": true
+            },
+            "temperature": {
+              "settings": {
+                "mode": "sample",
+                "temperature": 0.7,
+                "top_k": null,
+                "top_p": null
+              },
+              "tokens": [
+                {
+                  "token_id": 0,
+                  "probability": 0.25
+                },
+                {
+                  "token_id": 1,
+                  "probability": 0.25
+                },
+                {
+                  "token_id": 2,
+                  "probability": 0.25
+                },
+                {
+                  "token_id": 3,
+                  "probability": 0.25
+                }
+              ],
+              "passed": true
+            },
+            "temperature_high": {
+              "settings": {
+                "mode": "sample",
+                "temperature": 1.3,
+                "top_k": null,
+                "top_p": null
+              },
+              "tokens": [
+                {
+                  "token_id": 0,
+                  "probability": 0.25
+                },
+                {
+                  "token_id": 1,
+                  "probability": 0.25
+                },
+                {
+                  "token_id": 2,
+                  "probability": 0.25
+                },
+                {
+                  "token_id": 3,
+                  "probability": 0.25
+                }
+              ],
+              "passed": true
+            },
+            "top_k": {
+              "settings": {
+                "mode": "sample",
+                "temperature": 1.0,
+                "top_k": 2,
+                "top_p": null
+              },
+              "tokens": [
+                {
+                  "token_id": 0,
+                  "probability": 0.5
+                },
+                {
+                  "token_id": 1,
+                  "probability": 0.5
+                },
+                {
+                  "token_id": 2,
+                  "probability": 0.0
+                },
+                {
+                  "token_id": 3,
+                  "probability": 0.0
+                }
+              ],
+              "passed": true
+            },
+            "top_p": {
+              "settings": {
+                "mode": "sample",
+                "temperature": 1.0,
+                "top_k": null,
+                "top_p": 0.9
+              },
+              "tokens": [
+                {
+                  "token_id": 0,
+                  "probability": 0.25
+                },
+                {
+                  "token_id": 1,
+                  "probability": 0.25
+                },
+                {
+                  "token_id": 2,
+                  "probability": 0.25
+                },
+                {
+                  "token_id": 3,
+                  "probability": 0.25
+                }
+              ],
+              "passed": true
+            },
+            "combined": {
+              "settings": {
+                "mode": "sample",
+                "temperature": 0.7,
+                "top_k": 2,
+                "top_p": 0.9
+              },
+              "tokens": [
+                {
+                  "token_id": 0,
+                  "probability": 0.5
+                },
+                {
+                  "token_id": 1,
+                  "probability": 0.5
+                },
+                {
+                  "token_id": 2,
+                  "probability": 0.0
+                },
+                {
+                  "token_id": 3,
+                  "probability": 0.0
+                }
+              ],
+              "passed": true
+            }
+          }
+        }
+      ]
+    },
+    "timing": {
+      "forward_ms": "Synchronized model call only; excludes selection, validation, append, decoding, loading, network, and diagnostics.",
+      "warmup": "One prompt forward pass for fixed-logit inspection before all generation runs; no additional warmup.",
+      "run_order": [
+        "greedy",
+        "unfiltered",
+        "temperature",
+        "temperature_high",
+        "top_k",
+        "top_p",
+        "combined"
+      ],
+      "repeat_timing_saved": false,
+      "purpose": "Behavior comparison; no sampling latency, throughput, or end-to-end benchmark."
+    },
     "checks": {
       "runs_passed": true,
+      "distributions_passed": true,
+      "fixed_logits_match_greedy_first_token": true,
       "generated_ids_repeated": true,
       "model_in_eval_mode": true,
       "model_dtype_matches": true,
@@ -641,5 +1066,14 @@
       "status": "passed",
       "source": "benchmarks/results/stage02-autoregressive-decode.json"
     }
+  },
+  "summary_spec": {
+    "name": "stage03_sampling.json",
+    "sha256": "b9213774a423a9c4cca34173c889d695cd8d68352bee2b4ede8b01cd78680c4d"
+  },
+  "artifact_type": "summary",
+  "raw_result": {
+    "path": "raw/stage03-sampling-5bf7c0ad0da2.json",
+    "sha256": "5bf7c0ad0da23ed21faaec510ce6e2ae1d9788c22a130e1172571b4a33ef4cdc"
   }
 }

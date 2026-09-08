@@ -1,5 +1,5 @@
 {
-  "schema_version": 1,
+  "schema_version": 3,
   "experiment": "stage00_gpu_inspection",
   "recorded_at": "2026-09-05T19:46:13.681881+00:00",
   "git": {
@@ -16,5 +16,14 @@
     "torch_version": "2.12.1+cu126",
     "cuda_build_version": "12.6",
     "cuda_available": true
+  },
+  "summary_spec": {
+    "name": "stage00_gpu_inspection.json",
+    "sha256": "d7652525eb6ec10b8a868ed6027b4b0f2495fc14dbdfaa266270d83a383d8796"
+  },
+  "artifact_type": "summary",
+  "raw_result": {
+    "path": "raw/stage00-gpu-inspection-416f0aceab04.json",
+    "sha256": "416f0aceab04ab0dbbaf8b55db492eaff5f2c1c36d438eff7bec70dd02625587"
   }
 }

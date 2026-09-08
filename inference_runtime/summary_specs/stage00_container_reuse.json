@@ -1,0 +1,15 @@
+{
+  "same_container": true,
+  "container_ids": false,
+  "calls": {
+    "call": true,
+    "torch_was_imported": true,
+    "cuda_was_initialized": true,
+    "inputs_were_cached": true,
+    "import_ms": true,
+    "setup_ms": true,
+    "matmul_ms": true,
+    "remote_total_ms": true,
+    "caller_wall_ms": true
+  }
+}
