@@ -61,12 +61,18 @@ and seeded generation experiments passed. See the
 
 ### 04 — KV cache
 
+**Status:** Planned; [implementation and experiment plan](../stages/04_kv_cache/README.md) ready.
+
 Directory: `stages/04_kv_cache/`
 
 Decode with and without caching, using the model's supported `past_key_values`
 interface. Inspect key/value tensor shapes and cache growth. Demonstrate reuse of
 previous keys and values, and check cached versus uncached behavior. New tokens
 still attend to the cached context; caching does not make context length free.
+
+Validate logits and greedy continuations first, then compare synchronized model
+latency on matched prefixes and inspect cache memory growth. Stage 5 will expand
+the prefill/decode API and timing study.
 
 ### 05 — Prefill versus decode
 
@@ -113,6 +119,10 @@ with the shared implementation. Study continuous batching and PagedAttention/KV
 management. Match model revision, precision, token lengths, and sampling settings
 and document any remaining differences instead of attributing every improvement
 to a single feature.
+
+I will read the vLLM/PagedAttention paper and complementary material on runtime
+techniques such as speculative decoding and quantization, noting how each technique works, when
+it helps, and its tradeoffs.
 
 ### 10 — Serve inference as an API
 

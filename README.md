@@ -88,6 +88,8 @@ forward pass and greedy next-token selection. The
 manual autoregressive generation without KV caching. The
 [Stage 3 experiment](stages/03_sampling/README.md) compares temperature, top-k,
 and top-p on fixed logits and seeded continuations using the shared generation loop.
+The [Stage 4 plan](stages/04_kv_cache/README.md) covers cache correctness, memory
+growth, and a matched cached-versus-uncached latency comparison.
 
 ### Local environment versus GPU environment
 
@@ -129,9 +131,11 @@ inference-from-first-principles/
 │   ├── 02_autoregressive_decode/
 │   │   ├── README.md
 │   │   └── generate.py
-│   └── 03_sampling/
-│       ├── README.md
-│       └── sample.py
+│   ├── 03_sampling/
+│   │   ├── README.md
+│   │   └── sample.py
+│   └── 04_kv_cache/
+│       └── README.md
 ├── benchmarks/
 │   ├── workloads/
 │   │   └── README.md
