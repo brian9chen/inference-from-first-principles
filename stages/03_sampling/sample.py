@@ -29,6 +29,15 @@ app = modal.App("stage-03-sampling")
 cache_volume = modal.Volume.from_name(VOLUME_NAME, create_if_missing=True)
 
 
+# translate cli args into immutable SamplingConfig objects
+# 7 experiment cases:
+# - greedy
+# - unfiltered sampling
+# - temperature
+# - temperature_high
+# - top_k
+# - top_p
+# - combined
 def experiment_cases(mode, temperature, top_k, top_p):
     from inference_runtime.sampling import SamplingConfig
 
@@ -170,6 +179,7 @@ def run_case(model, inputs, tokenizer, budget, eos_ids, config, seeds):
     }
 
 
+# Suite: 2 greedy runs, plus 6 sampling cases × 3 seeds × 2 repeats = 38 runs.
 @app.function(
     image=image,
     gpu=GPU,
