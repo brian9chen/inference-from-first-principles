@@ -1,6 +1,7 @@
 import importlib.util
 import sys
 from copy import deepcopy
+from functools import partial
 from pathlib import Path
 
 import pytest
@@ -18,12 +19,14 @@ def stage():
     return module
 
 
-@pytest.fixture(params=["stage2", "shared"])
+@pytest.fixture(params=["stage2", "shared", "shared_explicit_uncached"])
 def decode(request):
     if request.param == "stage2":
         return request.getfixturevalue("stage").greedy_decode
     from inference_runtime.generation import generate_tokens
 
+    if request.param == "shared_explicit_uncached":
+        return partial(generate_tokens, use_cache=False)
     return generate_tokens
 
 

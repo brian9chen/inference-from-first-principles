@@ -20,19 +20,23 @@ def generate_tokens(
     eos_token_ids: tuple[int, ...],
     *,
     select_token: Callable[[Tensor], Tensor] = greedy_select,
+    use_cache: bool = False,
 ) -> dict[str, object]:
-    """Generate one unpadded sequence with uncached forward passes.
+    """Generate one unpadded sequence, optionally reusing attention keys/values.
 
     select_token receives logits shaped [1, vocabulary_size] and returns a
     [1, 1] token-ID tensor matching input_ids' dtype and device. A sampler can
     capture its settings and random generator in the callable.
+
+    Step input_length tracks the full prefix; model_input_length counts the
+    tokens processed by the current forward pass.
     """
     import torch
 
     if max_new_tokens < 0:
         raise ValueError("max_new_tokens must be nonnegative.")
-    input_ids = inputs["input_ids"]
-    attention_mask = inputs["attention_mask"]
+    input_ids = inputs["input_ids"] # shape: [batch_size, sequence_length] - just one prompt/batch for now
+    attention_mask = inputs["attention_mask"] # 
     if input_ids.ndim != 2 or input_ids.shape[0] != 1 or input_ids.shape[1] == 0:
         raise ValueError("Expected one nonempty prompt.")
     if attention_mask.shape != input_ids.shape or not attention_mask.eq(1).all():
@@ -49,19 +53,43 @@ def generate_tokens(
     steps = []
     stop_reason = "max_new_tokens"
     with torch.inference_mode():
+        if use_cache and max_new_tokens > 0:
+            from transformers import DynamicCache
+
+            cache = DynamicCache(config=model.config)
         for step in range(max_new_tokens):
             input_length = input_ids.shape[1]
+            
+            # input_ids[:, -1:] - last token of the prompt for all passes after the first forward pass
+            model_input_ids = input_ids[:, -1:] if use_cache and step > 0 else input_ids 
+            model_input_length = model_input_ids.shape[1]
+            cache_kwargs = {}
+            # prepare the cache kwargs for the model call (see below)
+            if use_cache:
+                cache_kwargs = {
+                    "past_key_values": cache,
+                    "cache_position": torch.arange(
+                        input_length - model_input_length,
+                        input_length,
+                        device=input_ids.device,
+                    ),
+                }
             if input_ids.device.type == "cuda":
                 torch.cuda.synchronize(input_ids.device)
             start = perf_counter()
+            
+            # cache is updated during this forward pass (model call)
             outputs = model(
-                input_ids=input_ids, attention_mask=attention_mask, use_cache=False
+                input_ids=model_input_ids,
+                attention_mask=attention_mask,
+                use_cache=use_cache,
+                **cache_kwargs,
             )
             if input_ids.device.type == "cuda":
                 torch.cuda.synchronize(input_ids.device)
             forward_ms = (perf_counter() - start) * 1000
             logits = outputs.logits
-            if list(logits.shape) != [1, input_length, model.config.vocab_size]:
+            if list(logits.shape) != [1, model_input_length, model.config.vocab_size]:
                 raise RuntimeError("Unexpected logits shape.")
             if logits.device != input_ids.device:
                 raise RuntimeError("Logits and inputs must be on the same device.")
@@ -84,6 +112,8 @@ def generate_tokens(
             next_token_id = next_token.item()
             if not 0 <= next_token_id < model.config.vocab_size:
                 raise ValueError("Selected token ID is outside the vocabulary.")
+            
+            # append the new token to the input_ids and attention_mask
             input_ids = torch.cat((input_ids, next_token), dim=1)
             attention_mask = torch.cat(
                 (attention_mask, torch.ones_like(attention_mask[:, :1])), dim=1
@@ -93,6 +123,7 @@ def generate_tokens(
                 {
                     "step": step + 1,
                     "input_length": input_length,
+                    "model_input_length": model_input_length,
                     "logits_shape": list(logits.shape),
                     "logits_device": str(logits.device),
                     "logits_dtype": str(logits.dtype),

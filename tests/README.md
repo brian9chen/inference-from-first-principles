@@ -13,6 +13,10 @@ callbacks, invalid selected tokens, and import independence. Stage 2 comparison
 tests check Stage 1 regression detection. Controlled model outputs make stopping
 tests deterministic; no model weights are downloaded.
 
+Cached-loop tests cover input slicing, masks, positions, custom selection,
+stopping, and context validation. A tiny randomly initialized Llama checks
+cached/uncached logits and greedy IDs, cache growth, and request isolation.
+
 Sampler tests cover temperature/filter ordering, normalization, large scores,
 exact top-p thresholds, deterministic ties, exclusion masks, invalid settings,
 generator lifetime, repeatability, and sample frequencies. Sampling frequencies
@@ -49,5 +53,4 @@ frequency checks, and the controlled generation integration check still use CPU.
 Repeatability is checked within each device, without requiring identical samples
 across CPU and CUDA.
 
-I plan to add cached-versus-uncached, batching, and scheduling tests as
-those behaviors are implemented.
+I plan to add batching and scheduling tests as those behaviors are implemented.

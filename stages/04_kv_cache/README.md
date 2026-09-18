@@ -1,6 +1,7 @@
 # Stage 4 — KV caching
 
-**Status:** Planned. No Stage 4 implementation or measurements yet.
+**Status:** In progress. I have added the cached generation path; Stage 4
+measurements are still planned.
 
 ## Goal
 
@@ -22,11 +23,13 @@ key/value to the cache. Old queries are unnecessary for the new prediction.
 
 For a prompt of P tokens, generating three new tokens will use these model inputs:
 
-| Call | Uncached input | Cached input | Prediction |
-| --- | --- | --- | --- |
-| 1 | Entire prompt | Entire prompt; build cache | First new token |
-| 2 | Prompt + first new token | First new token + existing cache | Second new token |
-| 3 | Prompt + first two new tokens | Second new token + existing cache | Third new token |
+
+| Call | Uncached input                | Cached input                      | Prediction       |
+| ---- | ----------------------------- | --------------------------------- | ---------------- |
+| 1    | Entire prompt                 | Entire prompt; build cache        | First new token  |
+| 2    | Prompt + first new token      | First new token + existing cache  | Second new token |
+| 3    | Prompt + first two new tokens | Second new token + existing cache | Third new token  |
+
 
 The first call is prefill in both paths. Later cached calls process one new token
 through the layers instead of recomputing the full prefix. That token still
@@ -42,9 +45,11 @@ downloaded model files stored on the Hugging Face cache Volume.
 
 ## Implementation plan
 
+
+
 ### 1. Add a cached path to the shared loop
 
-- [ ] Extend `inference_runtime/generation.py` with an explicit cache option,
+- [x] Extend `inference_runtime/generation.py` with an explicit cache option,
   retaining `use_cache=False` as the default and sharing token selection, output
   growth, EOS handling, budgets, and context validation between paths.
 - [ ] Reuse the pinned SmolLM2 model and loader, T4, float32, eager attention,
@@ -88,6 +93,8 @@ cross-request prefix reuse, and custom attention kernels remain later work.
   reservations. Dynamic growth can involve allocations and copies. Inspect
   shapes/bytes outside timing; do not serialize cache tensor contents.
 
+
+
 ### 3. Validate cached versus uncached behavior
 
 - [ ] On identical prefixes, compare the final-position logits at every step.
@@ -109,6 +116,8 @@ cross-request prefix reuse, and custom attention kernels remain later work.
   matching sampled outputs across numerically different paths is not a hard gate.
 - [ ] Keep the Stage 1–3 reference scripts intact and run existing generation and
   sampler tests after changing the shared loop.
+
+
 
 ### 4. Compare latency on matched workloads
 
